@@ -45,7 +45,7 @@ All game additions and removals are managed cleanly via **GitHub Actions** (`wor
 1. Go to your repository's **Actions** tab on GitHub.
 2. Select **"Bulk Import Games & Deploy"** in the left sidebar.
 3. Click **Run workflow**.
-4. Paste a list of URLs in the **List of Boxscore URLs** text area (one URL per line, optionally with `URL | Personal Note`).
+4. Paste a comma-separated (or newline-separated) list of URLs in the **Boxscore URLs** field (e.g. `https://url1, https://url2`, or `URL | Note, URL | Note`).
 5. Click the green **Run workflow** button.
 
 ### 3. Remove a Game
@@ -70,7 +70,7 @@ npm run dev
 npm run scrape -- --url "https://www.basketball-reference.com/boxscores/202411110NOP.html" --notes "Sat in lower bowl with friends"
 
 # Bulk import multiple games locally:
-npm run import-games -- --urls "https://www.basketball-reference.com/boxscores/202411110NOP.html\nhttps://www.sports-reference.com/cbb/boxscores/2024-11-06-20-louisiana-state.html"
+npm run import-games -- --urls "https://www.basketball-reference.com/boxscores/202411110NOP.html, https://www.sports-reference.com/cbb/boxscores/2024-11-06-20-louisiana-state.html"
 npm run import-games -- --file urls.txt
 
 # Remove a game locally:

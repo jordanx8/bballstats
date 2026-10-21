@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       urls:
-        description: 'List of Boxscore URLs (one per line, optionally "URL | Memory Note")'
+        description: 'Boxscore URLs (comma-separated or newline-separated, optionally "URL | Memory Note")'
         required: true
         type: string
       default_notes:

@@ -34,31 +34,59 @@ function parseInputUrls(): { items: ImportItem[]; delayMs: number } {
     rawUrls = fs.readFileSync(filePath, 'utf-8');
   }
 
-  const lines = rawUrls.split(/[\r\n,]+/);
+  if (!rawUrls.trim()) {
+    return { items: [], delayMs };
+  }
+
+  const rawLines = rawUrls.split(/[\r\n]+/);
   const items: ImportItem[] = [];
 
-  for (const rawLine of lines) {
-    const line = rawLine.trim();
-    if (!line || line.startsWith('#') || line.startsWith('//')) continue;
+  for (const rawLine of rawLines) {
+    const trimmedLine = rawLine.trim();
+    if (!trimmedLine || trimmedLine.startsWith('#') || trimmedLine.startsWith('//')) continue;
 
-    // Check if line contains "URL | Note"
-    if (line.includes('|')) {
-      const parts = line.split('|');
-      const url = parts[0].trim();
-      const notes = parts.slice(1).join('|').trim();
-      if (url.startsWith('http')) {
-        items.push({ url, notes: notes || defaultNotes || undefined });
-      }
-    } else {
-      // Find URL in line
-      const match = line.match(/(https?:\/\/[^\s"'<>]+)/);
-      if (match) {
-        items.push({ url: match[1].trim(), notes: defaultNotes || undefined });
+    // Split line by URL boundaries (supports comma-separated, space-separated, or pipe-separated notes)
+    const urlSegments = trimmedLine.split(/(?=https?:\/\/)/i);
+
+    for (const segment of urlSegments) {
+      let cleaned = segment.trim();
+      if (!cleaned) continue;
+
+      // Strip trailing commas, semicolons, quotes, and whitespace
+      cleaned = cleaned.replace(/[,;]+$/, '').trim();
+      cleaned = cleaned.replace(/^["']|["']$/g, '').trim();
+      if (!cleaned) continue;
+
+      if (cleaned.includes('|')) {
+        const parts = cleaned.split('|');
+        const urlMatch = parts[0].trim().match(/(https?:\/\/[^\s"',;<>]+)/i);
+        const notes = parts.slice(1).join('|').trim().replace(/[,;]+$/, '').trim();
+        if (urlMatch) {
+          items.push({ url: urlMatch[1], notes: notes || defaultNotes || undefined });
+        }
+      } else {
+        const subParts = cleaned.split(/[,;\s]+/);
+        for (const part of subParts) {
+          const match = part.trim().match(/(https?:\/\/[^\s"',;<>]+)/i);
+          if (match) {
+            items.push({ url: match[1].trim(), notes: defaultNotes || undefined });
+          }
+        }
       }
     }
   }
 
-  return { items, delayMs };
+  // Deduplicate items with the same URL
+  const uniqueItems: ImportItem[] = [];
+  const seenUrls = new Set<string>();
+  for (const item of items) {
+    if (!seenUrls.has(item.url)) {
+      seenUrls.add(item.url);
+      uniqueItems.push(item);
+    }
+  }
+
+  return { items: uniqueItems, delayMs };
 }
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -69,9 +97,9 @@ async function main() {
   if (items.length === 0) {
     console.error('❌ Error: No valid box score URLs provided.');
     console.error('\nUsage:');
-    console.error('  npx tsx scripts/import-games.ts --urls "https://...\\nhttps://..."');
+    console.error('  npx tsx scripts/import-games.ts --urls "https://url1, https://url2"');
     console.error('  npx tsx scripts/import-games.ts --file urls.txt');
-    console.error('  URL format per line: https://www.basketball-reference.com/... | Optional personal note');
+    console.error('  Supports comma-separated or newline-separated URLs (optionally: https://... | Note)');
     process.exit(1);
   }
 
