@@ -7,8 +7,8 @@
     "formattedDate": "December 13, 2025",
     "arena": "Pete Maravich Assembly Center (Baton Rouge, LA)",
     "awayTeam": {
-      "name": "Louisiana Tech",
-      "shortName": "LT",
+      "name": "Louisiana Tech Women",
+      "shortName": "LTW",
       "score": 61,
       "record": "5-4",
       "lineScores": [
@@ -279,8 +279,8 @@
       }
     },
     "homeTeam": {
-      "name": "LSU",
-      "shortName": "LSU",
+      "name": "LSU Women",
+      "shortName": "LSUW",
       "score": 87,
       "record": "11-0",
       "lineScores": [
