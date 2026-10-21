@@ -34,14 +34,21 @@ All game additions and removals are managed cleanly via **GitHub Actions** (`wor
 
 ## 🌐 Managing Games via GitHub Actions
 
-### 1. Add a Game
+### 1. Add a Single Game
 1. Go to your repository's **Actions** tab on GitHub.
 2. Select **"Scrape Game & Deploy to GitHub Pages"** in the left sidebar.
 3. Click **Run workflow**.
 4. Paste the Basketball-Reference or Sports-Reference URL in the **Boxscore URL** field and enter any optional personal notes.
 5. Click the green **Run workflow** button.
 
-### 2. Remove a Game
+### 2. Bulk Import Multiple Games
+1. Go to your repository's **Actions** tab on GitHub.
+2. Select **"Bulk Import Games & Deploy"** in the left sidebar.
+3. Click **Run workflow**.
+4. Paste a list of URLs in the **List of Boxscore URLs** text area (one URL per line, optionally with `URL | Personal Note`).
+5. Click the green **Run workflow** button.
+
+### 3. Remove a Game
 1. Go to your repository's **Actions** tab on GitHub.
 2. Select **"Remove Game & Deploy to GitHub Pages"** in the left sidebar.
 3. Click **Run workflow**, enter the **Game ID** (e.g. `nba-202411110NOP` or the boxscore URL), and click **Run workflow**.
@@ -59,8 +66,12 @@ npm install
 # Start local preview server
 npm run dev
 
-# Scrape & add a game locally:
+# Scrape & add a single game locally:
 npm run scrape -- --url "https://www.basketball-reference.com/boxscores/202411110NOP.html" --notes "Sat in lower bowl with friends"
+
+# Bulk import multiple games locally:
+npm run import-games -- --urls "https://www.basketball-reference.com/boxscores/202411110NOP.html\nhttps://www.sports-reference.com/cbb/boxscores/2024-11-06-20-louisiana-state.html"
+npm run import-games -- --file urls.txt
 
 # Remove a game locally:
 npm run delete-game -- --target "nba-202411110NOP"
@@ -72,14 +83,16 @@ npm run delete-game -- --target "nba-202411110NOP"
 
 ```
 ├── .github/workflows/
-│   ├── scrape-and-deploy.yml   # Manual workflow to scrape + commit + deploy
-│   ├── remove-game.yml         # Manual workflow to remove game + commit + deploy
-│   └── deploy-pages.yml        # Automatic deploy on push to main
+│   ├── scrape-and-deploy.yml       # Manual workflow to scrape a single game + deploy
+│   ├── bulk-import-and-deploy.yml  # Manual workflow to bulk import a list of URLs + deploy
+│   ├── remove-game.yml             # Manual workflow to remove game + deploy
+│   └── deploy-pages.yml            # Automatic deploy on push to main
 ├── data/
-│   └── games.json              # Local persistent JSON database of all attended games
+│   └── games.json                  # Local persistent JSON database of all attended games
 ├── scripts/
-│   ├── scrape-game.ts          # CLI scraping entrypoint
-│   └── delete-game.ts          # CLI delete entrypoint
+│   ├── scrape-game.ts              # CLI scraping single game entrypoint
+│   ├── import-games.ts             # CLI bulk import entrypoint
+│   └── delete-game.ts              # CLI delete entrypoint
 ├── server/
 │   ├── index.ts                # Express REST API
 │   ├── scraper.ts              # Cheerio/Curl scraper for Basketball & Sports Reference
