@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Game, UserStatsSummary } from '../types';
 import { 
   Trophy, Flame, Users, Shield, MapPin, 
-  ArrowRight, Sparkles, ChevronRight, Zap
+  ArrowRight, ChevronRight, Zap
 } from 'lucide-react';
 
 interface DashboardProps {
@@ -11,7 +11,6 @@ interface DashboardProps {
   onSelectGame: (game: Game) => void;
   onFilterByTeam: (teamName: string) => void;
   onFilterByPlayer: (playerName: string) => void;
-  onOpenSubmitModal: () => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
@@ -20,7 +19,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onSelectGame,
   onFilterByTeam,
   onFilterByPlayer,
-  onOpenSubmitModal,
 }) => {
   const [playerTab, setPlayerTab] = useState<'most_seen' | 'scoring' | 'playmaking' | 'rebounding'>('most_seen');
   const [teamTab, setTeamTab] = useState<'most_seen' | 'highest_winpct' | 'scoring'>('most_seen');
@@ -28,20 +26,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
   if (!summary || games.length === 0) {
     return (
       <div className="max-w-4xl mx-auto py-16 px-4 text-center">
-        <div className="w-20 h-20 bg-orange-500/10 border border-orange-500/20 rounded-3xl mx-auto flex items-center justify-center mb-6 text-3xl">
+        <div className="w-20 h-20 bg-[#0C2340] border border-[#B4975A]/40 rounded-3xl mx-auto flex items-center justify-center mb-6 text-3xl shadow-xl shadow-[#C69214]/10">
           🏀
         </div>
-        <h2 className="text-2xl font-bold text-white mb-2">No Games Logged Yet</h2>
-        <p className="text-slate-400 max-w-md mx-auto mb-8">
-          Submit links from Basketball-Reference or Sports-Reference to start tracking every game, team, and player you’ve ever seen in person.
+        <h2 className="text-2xl font-black text-white mb-2">No Games Logged Yet</h2>
+        <p className="text-slate-300/80 max-w-md mx-auto mb-6 text-sm leading-relaxed">
+          Log games you attend by triggering the <strong className="text-[#E0B543]">"Scrape Game &amp; Deploy"</strong> workflow in your repository's GitHub Actions tab.
         </p>
-        <button
-          onClick={onOpenSubmitModal}
-          className="inline-flex items-center space-x-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg shadow-orange-500/20 transition-all"
-        >
-          <Sparkles className="w-5 h-5" />
-          <span>Add Your First Game</span>
-        </button>
       </div>
     );
   }
@@ -64,60 +55,60 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   return (
     <div className="space-y-8 pb-16">
-      {/* Top Banner / Key Metrics */}
+      {/* Top Banner / Key Metrics (Pelicans Navy & Gold Cards) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Games */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-sm hover:border-slate-700 transition-colors">
-          <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Games Attended</span>
-            <div className="w-8 h-8 rounded-lg bg-orange-500/10 text-orange-400 flex items-center justify-center">
+        <div className="bg-[#0C2340]/90 border border-[#1c4575] rounded-2xl p-5 shadow-lg shadow-[#061324]/40 hover:border-[#B4975A]/60 transition-colors">
+          <div className="flex items-center justify-between text-slate-300 mb-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#B4975A]">Games Attended</span>
+            <div className="w-8 h-8 rounded-lg bg-[#C69214]/20 text-[#E0B543] border border-[#C69214]/30 flex items-center justify-center">
               <Trophy className="w-4 h-4" />
             </div>
           </div>
           <div className="text-3xl font-black text-white tracking-tight">{summary.totalGames}</div>
-          <div className="mt-1 flex items-center text-xs text-slate-400">
+          <div className="mt-1 flex items-center text-xs text-slate-300/80">
             <span>Across {summary.venuesSeen.length} venue{summary.venuesSeen.length === 1 ? '' : 's'}</span>
           </div>
         </div>
 
         {/* Total Points Seen */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-sm hover:border-slate-700 transition-colors">
-          <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Points Witnessed</span>
-            <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center">
+        <div className="bg-[#0C2340]/90 border border-[#1c4575] rounded-2xl p-5 shadow-lg shadow-[#061324]/40 hover:border-[#C8102E]/60 transition-colors">
+          <div className="flex items-center justify-between text-slate-300 mb-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#E31837]">Points Witnessed</span>
+            <div className="w-8 h-8 rounded-lg bg-[#C8102E]/20 text-[#E31837] border border-[#C8102E]/30 flex items-center justify-center">
               <Flame className="w-4 h-4" />
             </div>
           </div>
           <div className="text-3xl font-black text-white tracking-tight">{summary.totalPointsSeen.toLocaleString()}</div>
-          <div className="mt-1 flex items-center text-xs text-amber-400/90 font-medium">
+          <div className="mt-1 flex items-center text-xs text-[#E0B543] font-semibold">
             <span>Avg {summary.avgPointsPerGame} PPG per game</span>
           </div>
         </div>
 
         {/* Unique Teams Seen */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-sm hover:border-slate-700 transition-colors">
-          <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Unique Teams</span>
-            <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center">
+        <div className="bg-[#0C2340]/90 border border-[#1c4575] rounded-2xl p-5 shadow-lg shadow-[#061324]/40 hover:border-[#B4975A]/60 transition-colors">
+          <div className="flex items-center justify-between text-slate-300 mb-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#B4975A]">Unique Teams</span>
+            <div className="w-8 h-8 rounded-lg bg-[#16365C] text-[#E0B543] border border-[#1c4575] flex items-center justify-center">
               <Shield className="w-4 h-4" />
             </div>
           </div>
           <div className="text-3xl font-black text-white tracking-tight">{summary.topTeamsSeen.length}</div>
-          <div className="mt-1 text-xs text-slate-400 truncate">
+          <div className="mt-1 text-xs text-slate-300/80 truncate">
             Top: {summary.topTeamsSeen[0]?.teamName || 'None'}
           </div>
         </div>
 
         {/* Unique Players Seen */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-sm hover:border-slate-700 transition-colors">
-          <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Unique Players</span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+        <div className="bg-[#0C2340]/90 border border-[#1c4575] rounded-2xl p-5 shadow-lg shadow-[#061324]/40 hover:border-[#B4975A]/60 transition-colors">
+          <div className="flex items-center justify-between text-slate-300 mb-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#B4975A]">Unique Players</span>
+            <div className="w-8 h-8 rounded-lg bg-[#16365C] text-emerald-400 border border-[#1c4575] flex items-center justify-center">
               <Users className="w-4 h-4" />
             </div>
           </div>
           <div className="text-3xl font-black text-white tracking-tight">{summary.topPlayersSeen.length}</div>
-          <div className="mt-1 text-xs text-slate-400 truncate">
+          <div className="mt-1 text-xs text-slate-300/80 truncate">
             Top: {summary.topPlayersSeen[0]?.playerName || 'None'}
           </div>
         </div>
@@ -127,39 +118,39 @@ export const Dashboard: React.FC<DashboardProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
         {/* SECTION 1: TEAMS SEEN THE MOST */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 flex flex-col justify-between shadow-md">
+        <div className="bg-[#0C2340]/90 border border-[#1c4575] rounded-3xl p-6 flex flex-col justify-between shadow-xl shadow-[#061324]/40">
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
               <div>
                 <div className="flex items-center space-x-2">
-                  <Shield className="w-5 h-5 text-orange-400" />
-                  <h3 className="text-xl font-bold text-white tracking-tight">Teams You've Seen Most</h3>
+                  <Shield className="w-5 h-5 text-[#E0B543]" />
+                  <h3 className="text-xl font-black text-white tracking-tight">Teams You've Seen Most</h3>
                 </div>
-                <p className="text-xs text-slate-400 mt-0.5">Frequency, record, and scoring averages</p>
+                <p className="text-xs text-slate-300/70 mt-0.5">Frequency, record, and scoring averages</p>
               </div>
 
               {/* Tabs */}
-              <div className="flex items-center space-x-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
+              <div className="flex items-center space-x-1 bg-[#061324] p-1 rounded-xl border border-[#1c4575] text-xs">
                 <button
                   onClick={() => setTeamTab('most_seen')}
-                  className={`px-2.5 py-1 rounded-lg font-medium transition-colors ${
-                    teamTab === 'most_seen' ? 'bg-orange-500 text-white' : 'text-slate-400 hover:text-white'
+                  className={`px-2.5 py-1 rounded-lg font-semibold transition-colors ${
+                    teamTab === 'most_seen' ? 'bg-[#C69214] text-[#0C2340]' : 'text-slate-300 hover:text-white'
                   }`}
                 >
                   Most Seen
                 </button>
                 <button
                   onClick={() => setTeamTab('highest_winpct')}
-                  className={`px-2.5 py-1 rounded-lg font-medium transition-colors ${
-                    teamTab === 'highest_winpct' ? 'bg-orange-500 text-white' : 'text-slate-400 hover:text-white'
+                  className={`px-2.5 py-1 rounded-lg font-semibold transition-colors ${
+                    teamTab === 'highest_winpct' ? 'bg-[#C69214] text-[#0C2340]' : 'text-slate-300 hover:text-white'
                   }`}
                 >
                   Best Win%
                 </button>
                 <button
                   onClick={() => setTeamTab('scoring')}
-                  className={`px-2.5 py-1 rounded-lg font-medium transition-colors ${
-                    teamTab === 'scoring' ? 'bg-orange-500 text-white' : 'text-slate-400 hover:text-white'
+                  className={`px-2.5 py-1 rounded-lg font-semibold transition-colors ${
+                    teamTab === 'scoring' ? 'bg-[#C69214] text-[#0C2340]' : 'text-slate-300 hover:text-white'
                   }`}
                 >
                   Top Scoring
@@ -175,20 +166,20 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   <div
                     key={team.teamName}
                     onClick={() => onFilterByTeam(team.teamName)}
-                    className="group flex items-center justify-between p-3.5 bg-slate-950/60 hover:bg-slate-800/80 border border-slate-800/80 hover:border-orange-500/40 rounded-2xl cursor-pointer transition-all"
+                    className="group flex items-center justify-between p-3.5 bg-[#061324]/80 hover:bg-[#16365C] border border-[#1c4575]/80 hover:border-[#B4975A]/80 rounded-2xl cursor-pointer transition-all"
                   >
                     <div className="flex items-center space-x-3 min-w-0">
-                      <div className="w-7 h-7 rounded-xl bg-slate-800 text-slate-300 group-hover:bg-orange-500 group-hover:text-white flex items-center justify-center font-black text-xs transition-colors shrink-0">
+                      <div className="w-7 h-7 rounded-xl bg-[#16365C] text-[#E0B543] group-hover:bg-[#C69214] group-hover:text-[#0C2340] border border-[#1c4575] flex items-center justify-center font-black text-xs transition-colors shrink-0">
                         {idx + 1}
                       </div>
                       <div className="min-w-0">
-                        <div className="font-semibold text-white group-hover:text-orange-400 transition-colors truncate text-sm">
+                        <div className="font-bold text-white group-hover:text-[#E0B543] transition-colors truncate text-sm">
                           {team.teamName}
                         </div>
-                        <div className="flex items-center space-x-2 text-xs text-slate-400">
+                        <div className="flex items-center space-x-2 text-xs text-slate-300/80">
                           <span>{team.wins}W - {team.losses}L</span>
                           <span>•</span>
-                          <span className={winRate >= 50 ? 'text-emerald-400' : 'text-rose-400'}>{winRate}% Win</span>
+                          <span className={winRate >= 50 ? 'text-emerald-400 font-semibold' : 'text-[#E31837] font-semibold'}>{winRate}% Win</span>
                           <span>•</span>
                           <span>{team.avgPointsScored} PPG</span>
                         </div>
@@ -200,11 +191,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
                         <div className="text-base font-extrabold text-white">
                           {team.gamesSeen} <span className="text-xs font-normal text-slate-400">game{team.gamesSeen === 1 ? '' : 's'}</span>
                         </div>
-                        <div className="text-[11px] text-slate-500">
+                        <div className="text-[11px] text-[#B4975A]">
                           {team.asHomeCount}H / {team.asAwayCount}A
                         </div>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-orange-400 group-hover:translate-x-0.5 transition-all" />
+                      <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-[#E0B543] group-hover:translate-x-0.5 transition-all" />
                     </div>
                   </div>
                 );
@@ -213,10 +204,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </div>
 
           {sortedTeams.length > 6 && (
-            <div className="mt-4 pt-3 border-t border-slate-800/80 text-center">
+            <div className="mt-4 pt-3 border-t border-[#1c4575] text-center">
               <button
                 onClick={() => onFilterByTeam('')}
-                className="text-xs font-semibold text-orange-400 hover:text-orange-300 inline-flex items-center space-x-1"
+                className="text-xs font-bold text-[#E0B543] hover:text-[#B4975A] inline-flex items-center space-x-1"
               >
                 <span>View all {sortedTeams.length} teams in games journal</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -226,39 +217,39 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         {/* SECTION 2: PLAYERS SEEN THE MOST */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 flex flex-col justify-between shadow-md">
+        <div className="bg-[#0C2340]/90 border border-[#1c4575] rounded-3xl p-6 flex flex-col justify-between shadow-xl shadow-[#061324]/40">
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
               <div>
                 <div className="flex items-center space-x-2">
-                  <Users className="w-5 h-5 text-amber-400" />
-                  <h3 className="text-xl font-bold text-white tracking-tight">Players You've Seen Most</h3>
+                  <Users className="w-5 h-5 text-[#E0B543]" />
+                  <h3 className="text-xl font-black text-white tracking-tight">Players You've Seen Most</h3>
                 </div>
-                <p className="text-xs text-slate-400 mt-0.5">Top players witnessed live in action</p>
+                <p className="text-xs text-slate-300/70 mt-0.5">Top players witnessed live in action</p>
               </div>
 
               {/* Tabs */}
-              <div className="flex items-center space-x-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
+              <div className="flex items-center space-x-1 bg-[#061324] p-1 rounded-xl border border-[#1c4575] text-xs">
                 <button
                   onClick={() => setPlayerTab('most_seen')}
-                  className={`px-2.5 py-1 rounded-lg font-medium transition-colors ${
-                    playerTab === 'most_seen' ? 'bg-amber-500 text-white' : 'text-slate-400 hover:text-white'
+                  className={`px-2.5 py-1 rounded-lg font-semibold transition-colors ${
+                    playerTab === 'most_seen' ? 'bg-[#C69214] text-[#0C2340]' : 'text-slate-300 hover:text-white'
                   }`}
                 >
                   Most Seen
                 </button>
                 <button
                   onClick={() => setPlayerTab('scoring')}
-                  className={`px-2.5 py-1 rounded-lg font-medium transition-colors ${
-                    playerTab === 'scoring' ? 'bg-amber-500 text-white' : 'text-slate-400 hover:text-white'
+                  className={`px-2.5 py-1 rounded-lg font-semibold transition-colors ${
+                    playerTab === 'scoring' ? 'bg-[#C69214] text-[#0C2340]' : 'text-slate-300 hover:text-white'
                   }`}
                 >
                   Points
                 </button>
                 <button
                   onClick={() => setPlayerTab('playmaking')}
-                  className={`px-2.5 py-1 rounded-lg font-medium transition-colors ${
-                    playerTab === 'playmaking' ? 'bg-amber-500 text-white' : 'text-slate-400 hover:text-white'
+                  className={`px-2.5 py-1 rounded-lg font-semibold transition-colors ${
+                    playerTab === 'playmaking' ? 'bg-[#C69214] text-[#0C2340]' : 'text-slate-300 hover:text-white'
                   }`}
                 >
                   Assists
@@ -272,20 +263,20 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 <div
                   key={player.playerName}
                   onClick={() => onFilterByPlayer(player.playerName)}
-                  className="group flex items-center justify-between p-3.5 bg-slate-950/60 hover:bg-slate-800/80 border border-slate-800/80 hover:border-amber-500/40 rounded-2xl cursor-pointer transition-all"
+                  className="group flex items-center justify-between p-3.5 bg-[#061324]/80 hover:bg-[#16365C] border border-[#1c4575]/80 hover:border-[#B4975A]/80 rounded-2xl cursor-pointer transition-all"
                 >
                   <div className="flex items-center space-x-3 min-w-0">
-                    <div className="w-7 h-7 rounded-xl bg-slate-800 text-slate-300 group-hover:bg-amber-500 group-hover:text-white flex items-center justify-center font-black text-xs transition-colors shrink-0">
+                    <div className="w-7 h-7 rounded-xl bg-[#16365C] text-[#E0B543] group-hover:bg-[#C69214] group-hover:text-[#0C2340] border border-[#1c4575] flex items-center justify-center font-black text-xs transition-colors shrink-0">
                       {idx + 1}
                     </div>
                     <div className="min-w-0">
-                      <div className="font-semibold text-white group-hover:text-amber-400 transition-colors truncate text-sm">
+                      <div className="font-bold text-white group-hover:text-[#E0B543] transition-colors truncate text-sm">
                         {player.playerName}
                       </div>
-                      <div className="flex items-center space-x-2 text-xs text-slate-400 truncate">
-                        <span>{player.teamsPlayedFor.join(', ')}</span>
+                      <div className="flex items-center space-x-2 text-xs text-slate-300/80 truncate">
+                        <span className="text-slate-400">{player.teamsPlayedFor.join(', ')}</span>
                         <span>•</span>
-                        <span className="text-amber-400 font-medium">{player.avgPts} PPG</span>
+                        <span className="text-[#E0B543] font-semibold">{player.avgPts} PPG</span>
                         <span>•</span>
                         <span>{player.avgReb} RPG</span>
                         <span>•</span>
@@ -300,10 +291,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
                         {player.gamesSeen} <span className="text-xs font-normal text-slate-400">game{player.gamesSeen === 1 ? '' : 's'}</span>
                       </div>
                       <div className="text-[11px] text-slate-400">
-                        High: <span className="text-amber-400 font-semibold">{player.highScore} pts</span>
+                        High: <span className="text-[#E0B543] font-bold">{player.highScore} pts</span>
                       </div>
                     </div>
-                    <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-amber-400 group-hover:translate-x-0.5 transition-all" />
+                    <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-[#E0B543] group-hover:translate-x-0.5 transition-all" />
                   </div>
                 </div>
               ))}
@@ -311,10 +302,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </div>
 
           {sortedPlayers.length > 6 && (
-            <div className="mt-4 pt-3 border-t border-slate-800/80 text-center">
+            <div className="mt-4 pt-3 border-t border-[#1c4575] text-center">
               <button
                 onClick={() => onFilterByPlayer('')}
-                className="text-xs font-semibold text-amber-400 hover:text-amber-300 inline-flex items-center space-x-1"
+                className="text-xs font-bold text-[#E0B543] hover:text-[#B4975A] inline-flex items-center space-x-1"
               >
                 <span>Search all {sortedPlayers.length} players in games journal</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -328,13 +319,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Top Scoring Single Game Performances */}
-        <div className="lg:col-span-2 bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-md">
+        <div className="lg:col-span-2 bg-[#0C2340]/90 border border-[#1c4575] rounded-3xl p-6 shadow-xl shadow-[#061324]/40">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-2">
-              <Zap className="w-5 h-5 text-yellow-400" />
-              <h3 className="text-xl font-bold text-white tracking-tight">Top Scoring Performances Witnessed</h3>
+              <Zap className="w-5 h-5 text-[#E0B543]" />
+              <h3 className="text-xl font-black text-white tracking-tight">Top Scoring Performances Witnessed</h3>
             </div>
-            <span className="text-xs text-slate-400">Single game highs</span>
+            <span className="text-xs text-[#B4975A] font-semibold">Single game highs</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -345,28 +336,28 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   const targetGame = games.find(g => g.id === perf.gameId);
                   if (targetGame) onSelectGame(targetGame);
                 }}
-                className="group p-4 bg-slate-950/60 hover:bg-slate-800/80 border border-slate-800/80 hover:border-yellow-500/40 rounded-2xl cursor-pointer transition-all flex items-center justify-between"
+                className="group p-4 bg-[#061324]/80 hover:bg-[#16365C] border border-[#1c4575]/80 hover:border-[#B4975A]/80 rounded-2xl cursor-pointer transition-all flex items-center justify-between"
               >
                 <div className="min-w-0 pr-3">
                   <div className="flex items-center space-x-2">
-                    <span className="text-xs font-bold text-slate-500">#{index + 1}</span>
-                    <span className="font-bold text-white group-hover:text-yellow-400 transition-colors truncate">
+                    <span className="text-xs font-bold text-[#B4975A]">#{index + 1}</span>
+                    <span className="font-bold text-white group-hover:text-[#E0B543] transition-colors truncate">
                       {perf.playerName}
                     </span>
                   </div>
-                  <div className="text-xs text-slate-400 mt-1 truncate">
+                  <div className="text-xs text-slate-300 mt-1 truncate">
                     {perf.teamName}
                   </div>
-                  <div className="text-[11px] text-slate-500 mt-0.5 truncate">
+                  <div className="text-[11px] text-slate-400 mt-0.5 truncate">
                     {perf.gameDate} • {perf.matchup}
                   </div>
                 </div>
 
                 <div className="shrink-0 text-right">
-                  <div className="text-2xl font-black bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">
+                  <div className="text-2xl font-black bg-gradient-to-r from-[#E0B543] via-[#C69214] to-[#C8102E] bg-clip-text text-transparent">
                     {perf.points}
                   </div>
-                  <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">PTS</div>
+                  <div className="text-[10px] uppercase font-bold text-[#B4975A] tracking-wider">PTS</div>
                 </div>
               </div>
             ))}
@@ -374,44 +365,44 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         {/* Venues Visited */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-md">
+        <div className="bg-[#0C2340]/90 border border-[#1c4575] rounded-3xl p-6 shadow-xl shadow-[#061324]/40">
           <div className="flex items-center space-x-2 mb-6">
-            <MapPin className="w-5 h-5 text-rose-400" />
-            <h3 className="text-xl font-bold text-white tracking-tight">Venues & Arenas</h3>
+            <MapPin className="w-5 h-5 text-[#E31837]" />
+            <h3 className="text-xl font-black text-white tracking-tight">Venues &amp; Arenas</h3>
           </div>
 
           <div className="space-y-3">
             {summary.venuesSeen.slice(0, 5).map((venue) => (
               <div
                 key={venue.arena}
-                className="p-3 bg-slate-950/60 border border-slate-800/80 rounded-2xl flex items-center justify-between"
+                className="p-3 bg-[#061324]/80 border border-[#1c4575]/80 rounded-2xl flex items-center justify-between"
               >
                 <div className="min-w-0 pr-2">
                   <div className="text-sm font-semibold text-slate-200 truncate">
                     {venue.arena}
                   </div>
                 </div>
-                <div className="shrink-0 px-2.5 py-1 bg-slate-800/80 rounded-lg text-xs font-bold text-rose-300">
+                <div className="shrink-0 px-2.5 py-1 bg-[#16365C] border border-[#1c4575] rounded-lg text-xs font-bold text-[#E0B543]">
                   {venue.count} game{venue.count === 1 ? '' : 's'}
                 </div>
               </div>
             ))}
             {summary.venuesSeen.length === 0 && (
-              <p className="text-xs text-slate-500 italic">No arena details recorded yet.</p>
+              <p className="text-xs text-slate-400 italic">No arena details recorded yet.</p>
             )}
           </div>
 
           {/* League Distribution */}
-          <div className="mt-6 pt-5 border-t border-slate-800">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Leagues Witnessed</h4>
+          <div className="mt-6 pt-5 border-t border-[#1c4575]">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#B4975A] mb-3">Leagues Witnessed</h4>
             <div className="flex flex-wrap gap-2">
               {summary.leaguesSeen.map(l => (
                 <span
                   key={l.league}
-                  className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-950 border border-slate-800 text-slate-300 flex items-center space-x-1.5"
+                  className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#061324] border border-[#1c4575] text-slate-200 flex items-center space-x-1.5"
                 >
                   <span>{l.league}:</span>
-                  <span className="text-orange-400 font-bold">{l.count}</span>
+                  <span className="text-[#E0B543] font-bold">{l.count}</span>
                 </span>
               ))}
             </div>

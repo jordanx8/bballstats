@@ -4,25 +4,26 @@
 
 @layer base {
   body {
-    @apply bg-slate-950 text-slate-100 font-sans;
+    @apply bg-pelicans-navyDark text-slate-100 font-sans;
   }
 }
 
-/* Custom scrollbars */
+/* Custom scrollbars in Pelicans theme */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: #061324;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #16365C;
   border-radius: 4px;
+  border: 1px solid #1c4575;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #B4975A;
 }

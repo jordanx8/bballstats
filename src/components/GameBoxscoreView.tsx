@@ -47,9 +47,9 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
       <div className="flex items-center justify-between">
         <button
           onClick={onBack}
-          className="inline-flex items-center space-x-2 px-3.5 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white rounded-xl text-sm font-semibold transition-colors"
+          className="inline-flex items-center space-x-2 px-4 py-2 bg-[#0C2340] hover:bg-[#16365C] border border-[#1c4575] hover:border-[#B4975A] text-slate-200 hover:text-white rounded-xl text-sm font-bold transition-all shadow-md"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4 text-[#B4975A]" />
           <span>Back to List</span>
         </button>
 
@@ -57,41 +57,41 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
           href={game.sourceUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center space-x-1.5 text-xs text-orange-400 hover:text-orange-300 bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/20 px-3 py-1.5 rounded-xl transition-colors font-medium"
+          className="inline-flex items-center space-x-1.5 text-xs text-[#E0B543] hover:text-[#B4975A] bg-[#0C2340] hover:bg-[#16365C] border border-[#1c4575] px-3.5 py-2 rounded-xl transition-colors font-bold shadow-md"
         >
           <span>View on {game.sourceType === 'cbb' ? 'Sports-Reference' : 'Basketball-Reference'}</span>
           <ExternalLink className="w-3.5 h-3.5" />
         </a>
       </div>
 
-      {/* Main Scoreboard Card */}
-      <div className="bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-        {/* Subtle background glow */}
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl pointer-events-none" />
+      {/* Main Scoreboard Card (Pelicans Navy & Gold Gradient) */}
+      <div className="bg-gradient-to-b from-[#0C2340] to-[#061324] border border-[#1c4575] rounded-3xl p-6 sm:p-8 shadow-2xl shadow-[#061324]/80 relative overflow-hidden">
+        {/* Subtle gold glow */}
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#C69214]/10 rounded-full blur-3xl pointer-events-none" />
 
         {/* Date, League, Arena info */}
-        <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400 pb-6 border-b border-slate-800/80">
+        <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-300 pb-6 border-b border-[#1c4575]/80">
           <div className="flex items-center space-x-3">
-            <span className="px-2 py-0.5 rounded text-[11px] font-extrabold uppercase bg-orange-500/20 text-orange-400 border border-orange-500/30">
+            <span className="px-2.5 py-0.5 rounded text-[11px] font-black uppercase bg-[#C69214]/20 text-[#E0B543] border border-[#C69214]/40 tracking-wider">
               {game.sourceType === 'cbb' ? 'NCAA Men\'s Basketball' : game.sourceType.toUpperCase()}
             </span>
             <span className="flex items-center space-x-1">
-              <Calendar className="w-3.5 h-3.5 text-slate-500" />
-              <span className="text-slate-300 font-medium">{game.formattedDate || game.date}</span>
+              <Calendar className="w-3.5 h-3.5 text-[#B4975A]" />
+              <span className="text-white font-semibold">{game.formattedDate || game.date}</span>
             </span>
           </div>
 
           <div className="flex items-center space-x-4">
             {game.arena && (
               <span className="flex items-center space-x-1">
-                <MapPin className="w-3.5 h-3.5 text-slate-500" />
-                <span className="text-slate-300">{game.arena}</span>
+                <MapPin className="w-3.5 h-3.5 text-[#E31837]" />
+                <span className="text-slate-200 font-medium">{game.arena}</span>
               </span>
             )}
             {game.attendance && (
               <span className="flex items-center space-x-1">
-                <Users className="w-3.5 h-3.5 text-slate-500" />
-                <span>Attendance: {typeof game.attendance === 'number' ? game.attendance.toLocaleString() : game.attendance}</span>
+                <Users className="w-3.5 h-3.5 text-[#B4975A]" />
+                <span className="text-slate-300">Attendance: {typeof game.attendance === 'number' ? game.attendance.toLocaleString() : game.attendance}</span>
               </span>
             )}
           </div>
@@ -101,14 +101,14 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
         <div className="py-8 grid grid-cols-1 md:grid-cols-7 gap-6 items-center text-center">
           {/* Away Team */}
           <div className="md:col-span-3 flex flex-col items-center md:items-end text-center md:text-right">
-            <div className="text-xs uppercase tracking-widest text-slate-500 font-bold mb-1">
+            <div className="text-xs uppercase tracking-widest text-[#B4975A] font-bold mb-1">
               AWAY {game.awayTeam.record && `(${game.awayTeam.record})`}
             </div>
             <h2 className={`text-2xl sm:text-3xl font-black ${isAwayWinner ? 'text-white' : 'text-slate-400'}`}>
               {game.awayTeam.name}
             </h2>
             {isAwayWinner && (
-              <span className="mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              <span className="mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 tracking-wider">
                 WINNER
               </span>
             )}
@@ -120,26 +120,26 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
               <div className={`text-4xl sm:text-5xl font-black font-mono ${isAwayWinner ? 'text-white' : 'text-slate-400'}`}>
                 {game.awayTeam.score}
               </div>
-              <div className="text-slate-700 text-2xl font-light">-</div>
+              <div className="text-[#B4975A]/60 text-2xl font-light">-</div>
               <div className={`text-4xl sm:text-5xl font-black font-mono ${isHomeWinner ? 'text-white' : 'text-slate-400'}`}>
                 {game.homeTeam.score}
               </div>
             </div>
-            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mt-2">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-[#B4975A] mt-2">
               FINAL {game.isOvertime ? '(OT)' : ''}
             </div>
           </div>
 
           {/* Home Team */}
           <div className="md:col-span-3 flex flex-col items-center md:items-start text-center md:text-left">
-            <div className="text-xs uppercase tracking-widest text-slate-500 font-bold mb-1">
+            <div className="text-xs uppercase tracking-widest text-[#B4975A] font-bold mb-1">
               HOME {game.homeTeam.record && `(${game.homeTeam.record})`}
             </div>
             <h2 className={`text-2xl sm:text-3xl font-black ${isHomeWinner ? 'text-white' : 'text-slate-400'}`}>
               {game.homeTeam.name}
             </h2>
             {isHomeWinner && (
-              <span className="mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              <span className="mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 tracking-wider">
                 WINNER
               </span>
             )}
@@ -148,11 +148,11 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
 
         {/* Line Score Table */}
         {(game.awayTeam.lineScores.length > 0 || game.homeTeam.lineScores.length > 0) && (
-          <div className="mt-4 pt-6 border-t border-slate-800/80 max-w-lg mx-auto">
+          <div className="mt-4 pt-6 border-t border-[#1c4575]/80 max-w-lg mx-auto">
             <div className="overflow-x-auto">
               <table className="w-full text-center text-xs">
                 <thead>
-                  <tr className="text-slate-400 font-semibold border-b border-slate-800">
+                  <tr className="text-[#B4975A] font-bold border-b border-[#1c4575]">
                     <th className="py-2 px-3 text-left">Team</th>
                     {game.awayTeam.lineScores.map((_, idx) => (
                       <th key={idx} className="py-2 px-2.5">
@@ -162,28 +162,28 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
                     <th className="py-2 px-3 font-bold text-white">T</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/50">
+                <tbody className="divide-y divide-[#1c4575]/50">
                   <tr>
-                    <td className="py-2 px-3 text-left font-semibold text-slate-300">
+                    <td className="py-2 px-3 text-left font-bold text-slate-200">
                       {game.awayTeam.shortName || game.awayTeam.name}
                     </td>
                     {game.awayTeam.lineScores.map((score, idx) => (
-                      <td key={idx} className="py-2 px-2.5 text-slate-400 font-mono">
+                      <td key={idx} className="py-2 px-2.5 text-slate-300 font-mono">
                         {score}
                       </td>
                     ))}
-                    <td className="py-2 px-3 font-bold text-white font-mono">{game.awayTeam.score}</td>
+                    <td className="py-2 px-3 font-black text-white font-mono">{game.awayTeam.score}</td>
                   </tr>
                   <tr>
-                    <td className="py-2 px-3 text-left font-semibold text-slate-300">
+                    <td className="py-2 px-3 text-left font-bold text-slate-200">
                       {game.homeTeam.shortName || game.homeTeam.name}
                     </td>
                     {game.homeTeam.lineScores.map((score, idx) => (
-                      <td key={idx} className="py-2 px-2.5 text-slate-400 font-mono">
+                      <td key={idx} className="py-2 px-2.5 text-slate-300 font-mono">
                         {score}
                       </td>
                     ))}
-                    <td className="py-2 px-3 font-bold text-white font-mono">{game.homeTeam.score}</td>
+                    <td className="py-2 px-3 font-black text-white font-mono">{game.homeTeam.score}</td>
                   </tr>
                 </tbody>
               </table>
@@ -192,58 +192,58 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
         )}
       </div>
 
-      {/* Game Leaders and Memories Bar */}
+      {/* Game Leaders and Highlights Bar */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {/* Points Leader */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex items-center justify-between">
+        <div className="bg-[#0C2340]/90 border border-[#1c4575] rounded-2xl p-4 flex items-center justify-between shadow-lg">
           <div>
-            <div className="text-[11px] font-bold uppercase text-slate-400">Scoring Leader</div>
+            <div className="text-[11px] font-bold uppercase text-[#B4975A]">Scoring Leader</div>
             <div className="text-sm font-bold text-white mt-0.5 truncate">{ptsLeader.name}</div>
           </div>
-          <div className="text-2xl font-black text-amber-400 font-mono">{ptsLeader.pts} <span className="text-xs font-normal text-slate-400">PTS</span></div>
+          <div className="text-2xl font-black text-[#E0B543] font-mono">{ptsLeader.pts} <span className="text-xs font-normal text-slate-400">PTS</span></div>
         </div>
 
         {/* Rebound Leader */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex items-center justify-between">
+        <div className="bg-[#0C2340]/90 border border-[#1c4575] rounded-2xl p-4 flex items-center justify-between shadow-lg">
           <div>
-            <div className="text-[11px] font-bold uppercase text-slate-400">Rebound Leader</div>
+            <div className="text-[11px] font-bold uppercase text-[#B4975A]">Rebound Leader</div>
             <div className="text-sm font-bold text-white mt-0.5 truncate">{rebLeader.name}</div>
           </div>
-          <div className="text-2xl font-black text-blue-400 font-mono">{rebLeader.trb} <span className="text-xs font-normal text-slate-400">REB</span></div>
+          <div className="text-2xl font-black text-sky-400 font-mono">{rebLeader.trb} <span className="text-xs font-normal text-slate-400">REB</span></div>
         </div>
 
         {/* Assist Leader */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex items-center justify-between">
+        <div className="bg-[#0C2340]/90 border border-[#1c4575] rounded-2xl p-4 flex items-center justify-between shadow-lg">
           <div>
-            <div className="text-[11px] font-bold uppercase text-slate-400">Assist Leader</div>
+            <div className="text-[11px] font-bold uppercase text-[#B4975A]">Assist Leader</div>
             <div className="text-sm font-bold text-white mt-0.5 truncate">{astLeader.name}</div>
           </div>
           <div className="text-2xl font-black text-emerald-400 font-mono">{astLeader.ast} <span className="text-xs font-normal text-slate-400">AST</span></div>
         </div>
 
         {/* Total Points in game */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex items-center justify-between">
+        <div className="bg-[#0C2340]/90 border border-[#1c4575] rounded-2xl p-4 flex items-center justify-between shadow-lg">
           <div>
-            <div className="text-[11px] font-bold uppercase text-slate-400">Total Points</div>
+            <div className="text-[11px] font-bold uppercase text-[#B4975A]">Total Points</div>
             <div className="text-sm font-bold text-slate-300 mt-0.5">Game Combined</div>
           </div>
-          <div className="text-2xl font-black text-orange-400 font-mono">
+          <div className="text-2xl font-black text-[#E31837] font-mono">
             {game.awayTeam.score + game.homeTeam.score}
           </div>
         </div>
       </div>
 
       {/* Personal Notes Section */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6">
+      <div className="bg-[#0C2340]/90 border border-[#1c4575] rounded-3xl p-6 shadow-xl">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2">
-            <StickyNote className="w-4 h-4 text-amber-400" />
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider">Your Personal Memory & Notes</h3>
+            <StickyNote className="w-4 h-4 text-[#E0B543]" />
+            <h3 className="text-sm font-bold text-white uppercase tracking-wider">Your Personal Memory &amp; Notes</h3>
           </div>
           {!isEditingNotes && (
             <button
               onClick={() => setIsEditingNotes(true)}
-              className="text-xs text-orange-400 hover:text-orange-300 font-medium flex items-center space-x-1"
+              className="text-xs text-[#E0B543] hover:text-[#B4975A] font-bold flex items-center space-x-1"
             >
               <Edit2 className="w-3.5 h-3.5" />
               <span>{game.notes ? 'Edit Note' : 'Add Note'}</span>
@@ -257,7 +257,7 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
               value={notesText}
               onChange={(e) => setNotesText(e.target.value)}
               placeholder="e.g. Sat 5 rows from court with friends, awesome game-winner in overtime!"
-              className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-3.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-orange-500 min-h-[90px]"
+              className="w-full bg-[#061324] border border-[#1c4575] rounded-2xl p-3.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-[#C69214] min-h-[90px]"
             />
             <div className="flex items-center space-x-2 justify-end">
               <button
@@ -265,14 +265,14 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
                   setNotesText(game.notes || '');
                   setIsEditingNotes(false);
                 }}
-                className="px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white"
+                className="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveNotes}
                 disabled={isSavingNotes}
-                className="px-4 py-1.5 rounded-xl text-xs font-semibold bg-orange-500 hover:bg-orange-600 text-white flex items-center space-x-1.5 shadow-md shadow-orange-500/20"
+                className="px-4 py-1.5 rounded-xl text-xs font-bold bg-[#C69214] hover:bg-[#B4975A] text-[#0C2340] flex items-center space-x-1.5 shadow-md shadow-[#C69214]/20"
               >
                 <Check className="w-3.5 h-3.5" />
                 <span>{isSavingNotes ? 'Saving...' : 'Save Notes'}</span>
@@ -280,8 +280,8 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
             </div>
           </div>
         ) : (
-          <p className="text-sm text-slate-300 bg-slate-950/60 p-3.5 rounded-2xl border border-slate-800/80">
-            {game.notes || <span className="text-slate-500 italic">No notes logged for this game yet. Click "Add Note" to record where you sat or who you went with!</span>}
+          <p className="text-sm text-slate-200 bg-[#061324]/80 p-3.5 rounded-2xl border border-[#1c4575]/80">
+            {game.notes || <span className="text-slate-400 italic">No notes logged for this game yet. Click "Add Note" to record your memories!</span>}
           </p>
         )}
       </div>
@@ -312,31 +312,31 @@ const TeamBoxscoreTable: React.FC<TeamBoxscoreTableProps> = ({ team, label, isWi
   };
 
   return (
-    <div className="bg-slate-900/90 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
+    <div className="bg-[#0C2340]/90 border border-[#1c4575] rounded-3xl overflow-hidden shadow-xl shadow-[#061324]/50">
       {/* Table Header Banner */}
-      <div className="p-5 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between">
+      <div className="p-5 bg-[#061324]/90 border-b border-[#1c4575] flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 rounded-xl bg-slate-800 text-slate-200 flex items-center justify-center font-bold text-xs uppercase font-mono">
+          <div className="w-8 h-8 rounded-xl bg-[#16365C] border border-[#1c4575] text-[#E0B543] flex items-center justify-center font-bold text-xs uppercase font-mono">
             {team.shortName}
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white flex items-center space-x-2">
+            <h3 className="text-lg font-black text-white flex items-center space-x-2">
               <span>{team.name}</span>
               {isWinner && (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
                   {team.score} PTS
                 </span>
               )}
             </h3>
-            <span className="text-xs text-slate-400">{label}</span>
+            <span className="text-xs text-[#B4975A] font-medium">{label}</span>
           </div>
         </div>
 
         {team.totals && (
-          <div className="hidden sm:flex items-center space-x-4 text-xs text-slate-400 font-mono">
-            <span>FG: <strong className="text-slate-200">{team.totals.fg}/{team.totals.fga}</strong> ({formatPct(team.totals.fgPct)})</span>
-            <span>3P: <strong className="text-slate-200">{team.totals.fg3}/{team.totals.fg3a}</strong></span>
-            <span>FT: <strong className="text-slate-200">{team.totals.ft}/{team.totals.fta}</strong></span>
+          <div className="hidden sm:flex items-center space-x-4 text-xs text-slate-300 font-mono">
+            <span>FG: <strong className="text-white">{team.totals.fg}/{team.totals.fga}</strong> ({formatPct(team.totals.fgPct)})</span>
+            <span>3P: <strong className="text-white">{team.totals.fg3}/{team.totals.fg3a}</strong></span>
+            <span>FT: <strong className="text-white">{team.totals.ft}/{team.totals.fta}</strong></span>
           </div>
         )}
       </div>
@@ -345,7 +345,7 @@ const TeamBoxscoreTable: React.FC<TeamBoxscoreTableProps> = ({ team, label, isWi
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
-            <tr className="border-b border-slate-800 bg-slate-950/40 text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+            <tr className="border-b border-[#1c4575] bg-[#061324]/60 text-[10px] uppercase font-bold text-[#B4975A] tracking-wider">
               <th className="py-3 px-4 min-w-[160px]">Player</th>
               <th className="py-3 px-2 text-center">MP</th>
               <th className="py-3 px-2 text-center font-bold text-white">PTS</th>
@@ -364,9 +364,9 @@ const TeamBoxscoreTable: React.FC<TeamBoxscoreTableProps> = ({ team, label, isWi
               <th className="py-3 px-2 text-center">+/-</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/40">
+          <tbody className="divide-y divide-[#1c4575]/40">
             {/* Starters header */}
-            <tr className="bg-slate-950/60 font-bold text-[10px] uppercase tracking-wider text-slate-400">
+            <tr className="bg-[#061324]/80 font-bold text-[10px] uppercase tracking-wider text-[#B4975A]">
               <td colSpan={16} className="py-2 px-4">Starters</td>
             </tr>
             {starters.map((p, idx) => (
@@ -376,7 +376,7 @@ const TeamBoxscoreTable: React.FC<TeamBoxscoreTableProps> = ({ team, label, isWi
             {/* Bench */}
             {bench.length > 0 && (
               <>
-                <tr className="bg-slate-950/60 font-bold text-[10px] uppercase tracking-wider text-slate-400">
+                <tr className="bg-[#061324]/80 font-bold text-[10px] uppercase tracking-wider text-[#B4975A]">
                   <td colSpan={16} className="py-2 px-4">Reserves / Bench</td>
                 </tr>
                 {bench.map((p, idx) => (
@@ -388,13 +388,13 @@ const TeamBoxscoreTable: React.FC<TeamBoxscoreTableProps> = ({ team, label, isWi
             {/* DNP players */}
             {dnp.length > 0 && (
               <>
-                <tr className="bg-slate-950/60 font-bold text-[10px] uppercase tracking-wider text-slate-400">
+                <tr className="bg-[#061324]/80 font-bold text-[10px] uppercase tracking-wider text-[#B4975A]">
                   <td colSpan={16} className="py-2 px-4">Did Not Play</td>
                 </tr>
                 {dnp.map((p, idx) => (
-                  <tr key={p.name + idx} className="text-slate-500 italic">
-                    <td className="py-2.5 px-4 font-medium text-slate-400">{p.name}</td>
-                    <td colSpan={15} className="py-2.5 px-2 text-left text-slate-500">
+                  <tr key={p.name + idx} className="text-slate-400 italic">
+                    <td className="py-2.5 px-4 font-medium text-slate-300">{p.name}</td>
+                    <td colSpan={15} className="py-2.5 px-2 text-left text-slate-400">
                       {p.dnpReason}
                     </td>
                   </tr>
@@ -406,10 +406,10 @@ const TeamBoxscoreTable: React.FC<TeamBoxscoreTableProps> = ({ team, label, isWi
           {/* Team Totals */}
           {team.totals && (
             <tfoot>
-              <tr className="border-t-2 border-slate-700 bg-slate-950/90 font-bold text-slate-100">
-                <td className="py-3 px-4 font-extrabold uppercase">Team Totals</td>
+              <tr className="border-t-2 border-[#1c4575] bg-[#061324] font-bold text-slate-100">
+                <td className="py-3 px-4 font-black uppercase text-[#B4975A]">Team Totals</td>
                 <td className="py-3 px-2 text-center font-mono">{team.totals.mp || '240'}</td>
-                <td className="py-3 px-2 text-center text-sm font-black text-amber-400 font-mono">{team.totals.pts}</td>
+                <td className="py-3 px-2 text-center text-sm font-black text-[#E0B543] font-mono">{team.totals.pts}</td>
                 <td className="py-3 px-2 text-center font-mono">{team.totals.trb}</td>
                 <td className="py-3 px-2 text-center font-mono">{team.totals.ast}</td>
                 <td className="py-3 px-2 text-center font-mono">{team.totals.stl}</td>
@@ -434,27 +434,27 @@ const TeamBoxscoreTable: React.FC<TeamBoxscoreTableProps> = ({ team, label, isWi
 
 const PlayerRow: React.FC<{ player: PlayerStats; formatPct: (val: number | null) => string }> = ({ player, formatPct }) => {
   return (
-    <tr className="hover:bg-slate-800/50 transition-colors font-mono">
-      <td className="py-2.5 px-4 font-sans font-medium text-slate-200 whitespace-nowrap">
+    <tr className="hover:bg-[#16365C]/50 transition-colors font-mono">
+      <td className="py-2.5 px-4 font-sans font-medium text-slate-100 whitespace-nowrap">
         {player.name}
       </td>
-      <td className="py-2.5 px-2 text-center text-slate-400">{player.mp || '-'}</td>
-      <td className="py-2.5 px-2 text-center font-black text-amber-400 text-sm">{player.pts}</td>
-      <td className="py-2.5 px-2 text-center text-slate-300">{player.trb}</td>
-      <td className="py-2.5 px-2 text-center text-slate-300">{player.ast}</td>
-      <td className="py-2.5 px-2 text-center text-slate-300">{player.stl}</td>
-      <td className="py-2.5 px-2 text-center text-slate-300">{player.blk}</td>
-      <td className="py-2.5 px-2 text-center text-slate-400">{player.fg}-{player.fga}</td>
-      <td className="py-2.5 px-2 text-center text-slate-400">{formatPct(player.fgPct)}</td>
-      <td className="py-2.5 px-2 text-center text-slate-400">{player.fg3}-{player.fg3a}</td>
-      <td className="py-2.5 px-2 text-center text-slate-400">{formatPct(player.fg3Pct)}</td>
-      <td className="py-2.5 px-2 text-center text-slate-400">{player.ft}-{player.fta}</td>
-      <td className="py-2.5 px-2 text-center text-slate-400">{formatPct(player.ftPct)}</td>
-      <td className="py-2.5 px-2 text-center text-slate-400">{player.tov}</td>
-      <td className="py-2.5 px-2 text-center text-slate-400">{player.pf}</td>
+      <td className="py-2.5 px-2 text-center text-slate-300">{player.mp || '-'}</td>
+      <td className="py-2.5 px-2 text-center font-black text-[#E0B543] text-sm">{player.pts}</td>
+      <td className="py-2.5 px-2 text-center text-slate-200">{player.trb}</td>
+      <td className="py-2.5 px-2 text-center text-slate-200">{player.ast}</td>
+      <td className="py-2.5 px-2 text-center text-slate-200">{player.stl}</td>
+      <td className="py-2.5 px-2 text-center text-slate-200">{player.blk}</td>
+      <td className="py-2.5 px-2 text-center text-slate-300">{player.fg}-{player.fga}</td>
+      <td className="py-2.5 px-2 text-center text-slate-300">{formatPct(player.fgPct)}</td>
+      <td className="py-2.5 px-2 text-center text-slate-300">{player.fg3}-{player.fg3a}</td>
+      <td className="py-2.5 px-2 text-center text-slate-300">{formatPct(player.fg3Pct)}</td>
+      <td className="py-2.5 px-2 text-center text-slate-300">{player.ft}-{player.fta}</td>
+      <td className="py-2.5 px-2 text-center text-slate-300">{formatPct(player.ftPct)}</td>
+      <td className="py-2.5 px-2 text-center text-slate-300">{player.tov}</td>
+      <td className="py-2.5 px-2 text-center text-slate-300">{player.pf}</td>
       <td className="py-2.5 px-2 text-center">
         {player.plusMinus !== null && player.plusMinus !== undefined ? (
-          <span className={player.plusMinus > 0 ? 'text-emerald-400' : player.plusMinus < 0 ? 'text-rose-400' : 'text-slate-400'}>
+          <span className={player.plusMinus > 0 ? 'text-emerald-400 font-bold' : player.plusMinus < 0 ? 'text-[#E31837] font-bold' : 'text-slate-400'}>
             {player.plusMinus > 0 ? `+${player.plusMinus}` : player.plusMinus}
           </span>
         ) : (

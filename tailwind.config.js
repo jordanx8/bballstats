@@ -8,23 +8,24 @@ export default {
   theme: {
     extend: {
       colors: {
-        court: {
-          50: '#fbf7ee',
-          100: '#f4ebd5',
-          200: '#e8d2a6',
-          300: '#dbb471',
-          400: '#d19746',
-          500: '#c57d2b',
-          600: '#aa6022',
-          700: '#87461f',
-          800: '#6f3920',
-          900: '#5c301e',
+        pelicans: {
+          navy: '#0C2340',
+          navyDark: '#061324',
+          navyDeep: '#040d1a',
+          navyLight: '#16365C',
+          navyBorder: '#1c4575',
+          gold: '#C69214',
+          goldMetallic: '#B4975A',
+          goldLight: '#E0B543',
+          goldMuted: 'rgba(198, 146, 20, 0.15)',
+          red: '#C8102E',
+          redBright: '#E31837',
+          redMuted: 'rgba(200, 16, 46, 0.15)',
+          white: '#F5F7FA',
         },
-        nba: {
-          blue: '#1d428a',
-          red: '#c8102e',
-          dark: '#0f172a',
-        }
+      },
+      fontFamily: {
+        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
       },
     },
   },

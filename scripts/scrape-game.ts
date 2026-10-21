@@ -1,11 +1,5 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import { scrapeBoxscore } from '../server/scraper.js';
 import { addGame, loadGames, computeStatsSummary } from '../server/storage.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 function getCliArgs(): { url: string; notes?: string } {
   const args = process.argv.slice(2);
@@ -47,15 +41,7 @@ async function main() {
     }
 
     const { game, isNew } = addGame(scrapedGame);
-
-    // Also mirror data/games.json to public/data/games.json so static Vite build bundles it
-    const publicDataDir = path.resolve(__dirname, '../public/data');
-    if (!fs.existsSync(publicDataDir)) {
-      fs.mkdirSync(publicDataDir, { recursive: true });
-    }
     const allGames = loadGames();
-    fs.writeFileSync(path.join(publicDataDir, 'games.json'), JSON.stringify(allGames, null, 2), 'utf-8');
-
     const summary = computeStatsSummary(allGames);
 
     console.log(`\n✅ Successfully ${isNew ? 'added new game' : 'updated existing game'}!`);

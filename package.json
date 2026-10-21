@@ -7,13 +7,11 @@
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "client": "vite",
     "server": "tsx watch server/index.ts",
-    "prebuild": "tsx scripts/sync-data.ts",
-    "build": "npm run prebuild && tsc && vite build",
+    "build": "tsc && vite build",
     "preview": "vite preview",
     "start": "tsx server/index.ts",
     "scrape": "tsx scripts/scrape-game.ts",
-    "delete-game": "tsx scripts/delete-game.ts",
-    "sync-data": "tsx scripts/sync-data.ts"
+    "delete-game": "tsx scripts/delete-game.ts"
   },
   "dependencies": {
     "axios": "^1.7.9",
