@@ -154,8 +154,8 @@ export function parseBoxscoreHtml(rawHtml: string, url: string, defaultSourceTyp
   // Date and Game Meta
   let gameDate = '';
   let formattedDate = '';
-  let arena = '';
-  let attendance: string | number = '';
+  let arena: string | undefined = undefined;
+  let attendance: string | number | undefined = undefined;
 
   // Extract date from meta or scorebox_meta
   const metaText = $('.scorebox_meta, .scorebox .scorebox_meta').text();
@@ -338,6 +338,11 @@ export function parseBoxscoreHtml(rawHtml: string, url: string, defaultSourceTyp
   if (!homeTeamName && basicTables[1]) {
     const heading = basicTables[1].$table.closest('.table_wrapper').find('h2, span.section_anchor').first().text();
     homeTeamName = heading.replace(/\(.*?\)/g, '').trim();
+  }
+
+  // If arena was not found in scorebox metadata, resolve via home team or URL slug
+  if (!arena && (homeTeamName || url)) {
+    arena = resolveFallbackArena(homeTeamName, url);
   }
 
   // Fallback short names
@@ -601,4 +606,118 @@ function extractTeamCode(teamName: string): string {
     return words.map(w => w[0]).join('').toUpperCase().slice(0, 4);
   }
   return clean.slice(0, 3).toUpperCase();
+}
+
+const KNOWN_ARENAS: Record<string, string> = {
+  // Louisiana & Regional NCAA CBB
+  'louisiana state': 'Pete Maravich Assembly Center (Baton Rouge, LA)',
+  'louisiana state university': 'Pete Maravich Assembly Center (Baton Rouge, LA)',
+  'lsu': 'Pete Maravich Assembly Center (Baton Rouge, LA)',
+  'louisiana-state': 'Pete Maravich Assembly Center (Baton Rouge, LA)',
+  'new orleans': 'Lakefront Arena (New Orleans, LA)',
+  'uno': 'Lakefront Arena (New Orleans, LA)',
+  'tulane': 'Devlin Fieldhouse (New Orleans, LA)',
+  'louisiana-monroe': 'Fant-Ewing Coliseum (Monroe, LA)',
+  'louisiana–monroe': 'Fant-Ewing Coliseum (Monroe, LA)',
+  'ulm': 'Fant-Ewing Coliseum (Monroe, LA)',
+  'louisiana': 'Cajundome (Lafayette, LA)',
+  'louisiana-lafayette': 'Cajundome (Lafayette, LA)',
+  'ull': 'Cajundome (Lafayette, LA)',
+  'louisiana tech': 'Thomas Assembly Center (Ruston, LA)',
+  'latech': 'Thomas Assembly Center (Ruston, LA)',
+  'southern': 'F. G. Clark Center (Baton Rouge, LA)',
+  'southern university': 'F. G. Clark Center (Baton Rouge, LA)',
+  'grambling': 'Fredrick C. Hobdy Assembly Center (Grambling, LA)',
+  'grambling state': 'Fredrick C. Hobdy Assembly Center (Grambling, LA)',
+  'mcneese': 'The Legacy Center (Lake Charles, LA)',
+  'mcneese state': 'The Legacy Center (Lake Charles, LA)',
+  'nicholls': 'Stopher Gymnasium (Thibodaux, LA)',
+  'nicholls state': 'Stopher Gymnasium (Thibodaux, LA)',
+  'northwestern state': 'Prather Coliseum (Natchitoches, LA)',
+  'southeastern louisiana': 'University Center (Hammond, LA)',
+
+  // Major NCAA CBB Programs
+  'kentucky': 'Rupp Arena (Lexington, KY)',
+  'duke': 'Cameron Indoor Stadium (Durham, NC)',
+  'north carolina': 'Dean E. Smith Center (Chapel Hill, NC)',
+  'unc': 'Dean E. Smith Center (Chapel Hill, NC)',
+  'kansas': 'Allen Fieldhouse (Lawrence, KS)',
+  'alabama': 'Coleman Coliseum (Tuscaloosa, AL)',
+  'auburn': 'Neville Arena (Auburn, AL)',
+  'tennessee': 'Thompson-Boling Arena (Knoxville, TN)',
+  'florida': 'Exactech Arena at Stephen C. O\'Connell Center (Gainesville, FL)',
+  'arkansas': 'Bud Walton Arena (Fayetteville, AR)',
+  'texas': 'Moody Center (Austin, TX)',
+  'texas a&m': 'Reed Arena (College Station, TX)',
+  'houston': 'Fertitta Center (Houston, TX)',
+  'baylor': 'Foster Pavilion (Waco, TX)',
+  'uconn': 'Harry A. Gampel Pavilion (Storrs, CT)',
+  'connecticut': 'Harry A. Gampel Pavilion (Storrs, CT)',
+  'purdue': 'Mackey Arena (West Lafayette, IN)',
+  'indiana': 'Simon Skjodt Assembly Hall (Bloomington, IN)',
+  'illinois': 'State Farm Center (Champaign, IL)',
+  'michigan state': 'Breslin Student Events Center (East Lansing, MI)',
+  'michigan': 'Crisler Center (Ann Arbor, MI)',
+  'ohio state': 'Value City Arena (Columbus, OH)',
+  'arizona': 'McKale Center (Tucson, AZ)',
+  'ucla': 'Pauley Pavilion (Los Angeles, CA)',
+  'gonzaga': 'McCarthey Athletic Center (Spokane, WA)',
+  'villanova': 'Finneran Pavilion (Villanova, PA)',
+  'marquette': 'Fiserv Forum (Milwaukee, WI)',
+  'creighton': 'CHI Health Center (Omaha, NE)',
+  'memphis': 'FedExForum (Memphis, TN)',
+  'iowa state': 'Hilton Coliseum (Ames, IA)',
+  'texas tech': 'United Supermarkets Arena (Lubbock, TX)',
+
+  // NBA Teams
+  'new orleans pelicans': 'Smoothie King Center, New Orleans, Louisiana',
+  'pelicans': 'Smoothie King Center, New Orleans, Louisiana',
+  'nop': 'Smoothie King Center, New Orleans, Louisiana',
+  'brooklyn nets': 'Barclays Center, Brooklyn, New York',
+  'nets': 'Barclays Center, Brooklyn, New York',
+  'chicago bulls': 'United Center, Chicago, Illinois',
+  'bulls': 'United Center, Chicago, Illinois',
+  'los angeles lakers': 'Crypto.com Arena, Los Angeles, California',
+  'lakers': 'Crypto.com Arena, Los Angeles, California',
+  'boston celtics': 'TD Garden, Boston, Massachusetts',
+  'celtics': 'TD Garden, Boston, Massachusetts',
+  'golden state warriors': 'Chase Center, San Francisco, California',
+  'warriors': 'Chase Center, San Francisco, California',
+  'new york knicks': 'Madison Square Garden, New York, New York',
+  'knicks': 'Madison Square Garden, New York, New York',
+  'miami heat': 'Kaseya Center, Miami, Florida',
+  'heat': 'Kaseya Center, Miami, Florida',
+  'dallas mavericks': 'American Airlines Center, Dallas, Texas',
+  'mavericks': 'American Airlines Center, Dallas, Texas',
+  'houston rockets': 'Toyota Center, Houston, Texas',
+  'rockets': 'Toyota Center, Houston, Texas',
+  'san antonio spurs': 'Frost Bank Center, San Antonio, Texas',
+  'spurs': 'Frost Bank Center, San Antonio, Texas',
+  'atlanta hawks': 'State Farm Arena, Atlanta, Georgia',
+  'hawks': 'State Farm Arena, Atlanta, Georgia',
+  'memphis grizzlies': 'FedExForum, Memphis, Tennessee',
+  'grizzlies': 'FedExForum, Memphis, Tennessee',
+};
+
+function resolveFallbackArena(homeTeamName?: string, url?: string): string | undefined {
+  if (homeTeamName) {
+    const clean = homeTeamName.toLowerCase().replace(/[^a-z0-9 ]/g, ' ').trim();
+    if (KNOWN_ARENAS[clean]) return KNOWN_ARENAS[clean];
+    for (const [key, venue] of Object.entries(KNOWN_ARENAS)) {
+      if (clean === key || clean.includes(key) || key.includes(clean)) {
+        return venue;
+      }
+    }
+  }
+
+  if (url) {
+    const urlLower = url.toLowerCase();
+    for (const [key, venue] of Object.entries(KNOWN_ARENAS)) {
+      if (urlLower.includes(key)) {
+        return venue;
+      }
+    }
+  }
+
+  return undefined;
 }

@@ -657,6 +657,7 @@
     "sourceType": "cbb",
     "date": "2025-11-10",
     "formattedDate": "November 10, 2025",
+    "arena": "Pete Maravich Assembly Center (Baton Rouge, LA)",
     "awayTeam": {
       "name": "New Orleans",
       "shortName": "NO",
@@ -1323,8 +1324,7 @@
     },
     "winner": "home",
     "isOvertime": false,
-    "submittedAt": "2026-10-21T15:47:49.044Z",
-    "notes": "Test note"
+    "submittedAt": "2026-10-21T15:47:49.044Z"
   },
   {
     "id": "cbb-2025-11-05-20-louisiana-state",
@@ -1332,6 +1332,7 @@
     "sourceType": "cbb",
     "date": "2025-11-05",
     "formattedDate": "November 5, 2025",
+    "arena": "Pete Maravich Assembly Center (Baton Rouge, LA)",
     "awayTeam": {
       "name": "Tarleton State",
       "shortName": "TS",
@@ -2707,6 +2708,7 @@
     "sourceType": "cbb",
     "date": "2024-11-06",
     "formattedDate": "November 6, 2024",
+    "arena": "Pete Maravich Assembly Center (Baton Rouge, LA)",
     "awayTeam": {
       "name": "Louisiana–Monroe",
       "shortName": "LOU",

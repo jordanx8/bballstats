@@ -17,33 +17,33 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo & Brand (Pelicans Theme) */}
-          <div 
-            className="flex items-center space-x-3 cursor-pointer group" 
+          <div
+            className="flex items-center space-x-3 cursor-pointer group"
             onClick={() => setActiveTab('dashboard')}
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#C8102E] via-[#0C2340] to-[#C69214] border border-[#B4975A]/60 flex items-center justify-center shadow-md shadow-[#C69214]/20 group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-[#0C2340] border border-[#B4975A] flex items-center justify-center shadow-md shadow-[#061324]/50 group-hover:scale-105 transition-transform">
               <span className="text-xl select-none">🏀</span>
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <span className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-[#F5F7FA] to-[#B4975A] bg-clip-text text-transparent">
+                <span className="font-extrabold text-lg tracking-tight text-white">
                   CourtPass
                 </span>
-                <span className="px-1.5 py-0.5 text-[10px] font-bold bg-[#C69214]/20 text-[#E0B543] border border-[#C69214]/40 rounded tracking-wider">
+                <span className="px-1.5 py-0.5 text-[10px] font-bold bg-[#061324] text-[#B4975A] border border-[#B4975A]/60 rounded tracking-wider">
                   BOXSCORE LOG
                 </span>
               </div>
-              <p className="text-[11px] text-slate-300/80 hidden sm:block">Attended Basketball Games &amp; Box Scores</p>
+              <p className="text-[11px] text-slate-300 hidden sm:block">Attended Basketball Games &amp; Box Scores</p>
             </div>
           </div>
 
           {/* Navigation Tabs (Pelicans Navy & Gold) */}
-          <div className="flex items-center space-x-1 sm:space-x-2 bg-[#061324]/80 p-1 rounded-xl border border-[#1c4575]">
+          <div className="flex items-center space-x-1 sm:space-x-2 bg-[#061324] p-1 rounded-xl border border-[#1c4575]">
             <button
               onClick={() => setActiveTab('dashboard')}
               className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all ${
                 activeTab === 'dashboard'
-                  ? 'bg-gradient-to-r from-[#C69214] to-[#B4975A] text-[#0C2340] shadow-md shadow-[#C69214]/30'
+                  ? 'bg-[#B4975A] text-[#0C2340] shadow-sm'
                   : 'text-slate-300 hover:text-white hover:bg-[#16365C]/50'
               }`}
             >
@@ -54,15 +54,15 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={() => setActiveTab('games')}
               className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all ${
                 activeTab === 'games'
-                  ? 'bg-gradient-to-r from-[#C69214] to-[#B4975A] text-[#0C2340] shadow-md shadow-[#C69214]/30'
+                  ? 'bg-[#B4975A] text-[#0C2340] shadow-sm'
                   : 'text-slate-300 hover:text-white hover:bg-[#16365C]/50'
               }`}
             >
               <Calendar className="w-4 h-4" />
               <span>Games Journal</span>
               {totalGames > 0 && (
-                <span className={`text-xs px-2 py-0.2 rounded-full font-bold ${
-                  activeTab === 'games' ? 'bg-[#0C2340] text-[#E0B543]' : 'bg-[#16365C] text-slate-200 border border-[#1c4575]'
+                <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${
+                  activeTab === 'games' ? 'bg-[#0C2340] text-[#B4975A]' : 'bg-[#16365C] text-slate-200 border border-[#1c4575]'
                 }`}>
                   {totalGames}
                 </span>

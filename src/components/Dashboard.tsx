@@ -58,57 +58,57 @@ export const Dashboard: React.FC<DashboardProps> = ({
       {/* Top Banner / Key Metrics (Pelicans Navy & Gold Cards) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Games */}
-        <div className="bg-[#0C2340]/90 border border-[#1c4575] rounded-2xl p-5 shadow-lg shadow-[#061324]/40 hover:border-[#B4975A]/60 transition-colors">
+        <div className="bg-[#0C2340] border border-[#1c4575] rounded-2xl p-5 shadow-lg shadow-[#061324]/40 hover:border-[#B4975A]/60 transition-colors">
           <div className="flex items-center justify-between text-slate-300 mb-2">
             <span className="text-xs font-bold uppercase tracking-wider text-[#B4975A]">Games Attended</span>
-            <div className="w-8 h-8 rounded-lg bg-[#C69214]/20 text-[#E0B543] border border-[#C69214]/30 flex items-center justify-center">
-              <Trophy className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-lg bg-[#061324] text-[#B4975A] border border-[#1c4575] flex items-center justify-center">
+              <Trophy className="w-4 h-4 text-[#B4975A]" />
             </div>
           </div>
           <div className="text-3xl font-black text-white tracking-tight">{summary.totalGames}</div>
-          <div className="mt-1 flex items-center text-xs text-slate-300/80">
+          <div className="mt-1 flex items-center text-xs text-slate-300">
             <span>Across {summary.venuesSeen.length} venue{summary.venuesSeen.length === 1 ? '' : 's'}</span>
           </div>
         </div>
 
         {/* Total Points Seen */}
-        <div className="bg-[#0C2340]/90 border border-[#1c4575] rounded-2xl p-5 shadow-lg shadow-[#061324]/40 hover:border-[#C8102E]/60 transition-colors">
+        <div className="bg-[#0C2340] border border-[#1c4575] rounded-2xl p-5 shadow-lg shadow-[#061324]/40 hover:border-[#B4975A]/60 transition-colors">
           <div className="flex items-center justify-between text-slate-300 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#E31837]">Points Witnessed</span>
-            <div className="w-8 h-8 rounded-lg bg-[#C8102E]/20 text-[#E31837] border border-[#C8102E]/30 flex items-center justify-center">
-              <Flame className="w-4 h-4" />
+            <span className="text-xs font-bold uppercase tracking-wider text-[#B4975A]">Points Witnessed</span>
+            <div className="w-8 h-8 rounded-lg bg-[#061324] text-[#B4975A] border border-[#1c4575] flex items-center justify-center">
+              <Flame className="w-4 h-4 text-[#B4975A]" />
             </div>
           </div>
           <div className="text-3xl font-black text-white tracking-tight">{summary.totalPointsSeen.toLocaleString()}</div>
-          <div className="mt-1 flex items-center text-xs text-[#E0B543] font-semibold">
+          <div className="mt-1 flex items-center text-xs text-[#B4975A] font-semibold">
             <span>Avg {summary.avgPointsPerGame} PPG per game</span>
           </div>
         </div>
 
         {/* Unique Teams Seen */}
-        <div className="bg-[#0C2340]/90 border border-[#1c4575] rounded-2xl p-5 shadow-lg shadow-[#061324]/40 hover:border-[#B4975A]/60 transition-colors">
+        <div className="bg-[#0C2340] border border-[#1c4575] rounded-2xl p-5 shadow-lg shadow-[#061324]/40 hover:border-[#B4975A]/60 transition-colors">
           <div className="flex items-center justify-between text-slate-300 mb-2">
             <span className="text-xs font-bold uppercase tracking-wider text-[#B4975A]">Unique Teams</span>
-            <div className="w-8 h-8 rounded-lg bg-[#16365C] text-[#E0B543] border border-[#1c4575] flex items-center justify-center">
-              <Shield className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-lg bg-[#061324] text-[#B4975A] border border-[#1c4575] flex items-center justify-center">
+              <Shield className="w-4 h-4 text-[#B4975A]" />
             </div>
           </div>
           <div className="text-3xl font-black text-white tracking-tight">{summary.topTeamsSeen.length}</div>
-          <div className="mt-1 text-xs text-slate-300/80 truncate">
+          <div className="mt-1 text-xs text-slate-300 truncate">
             Top: {summary.topTeamsSeen[0]?.teamName || 'None'}
           </div>
         </div>
 
         {/* Unique Players Seen */}
-        <div className="bg-[#0C2340]/90 border border-[#1c4575] rounded-2xl p-5 shadow-lg shadow-[#061324]/40 hover:border-[#B4975A]/60 transition-colors">
+        <div className="bg-[#0C2340] border border-[#1c4575] rounded-2xl p-5 shadow-lg shadow-[#061324]/40 hover:border-[#B4975A]/60 transition-colors">
           <div className="flex items-center justify-between text-slate-300 mb-2">
             <span className="text-xs font-bold uppercase tracking-wider text-[#B4975A]">Unique Players</span>
-            <div className="w-8 h-8 rounded-lg bg-[#16365C] text-emerald-400 border border-[#1c4575] flex items-center justify-center">
-              <Users className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-lg bg-[#061324] text-[#B4975A] border border-[#1c4575] flex items-center justify-center">
+              <Users className="w-4 h-4 text-[#B4975A]" />
             </div>
           </div>
           <div className="text-3xl font-black text-white tracking-tight">{summary.topPlayersSeen.length}</div>
-          <div className="mt-1 text-xs text-slate-300/80 truncate">
+          <div className="mt-1 text-xs text-slate-300 truncate">
             Top: {summary.topPlayersSeen[0]?.playerName || 'None'}
           </div>
         </div>
@@ -341,7 +341,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 <div className="min-w-0 pr-3">
                   <div className="flex items-center space-x-2">
                     <span className="text-xs font-bold text-[#B4975A]">#{index + 1}</span>
-                    <span className="font-bold text-white group-hover:text-[#E0B543] transition-colors truncate">
+                    <span className="font-bold text-white group-hover:text-[#B4975A] transition-colors truncate">
                       {perf.playerName}
                     </span>
                   </div>
@@ -354,7 +354,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 </div>
 
                 <div className="shrink-0 text-right">
-                  <div className="text-2xl font-black bg-gradient-to-r from-[#E0B543] via-[#C69214] to-[#C8102E] bg-clip-text text-transparent">
+                  <div className="text-2xl font-black text-[#B4975A]">
                     {perf.points}
                   </div>
                   <div className="text-[10px] uppercase font-bold text-[#B4975A] tracking-wider">PTS</div>
@@ -365,9 +365,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         {/* Venues Visited */}
-        <div className="bg-[#0C2340]/90 border border-[#1c4575] rounded-3xl p-6 shadow-xl shadow-[#061324]/40">
+        <div className="bg-[#0C2340] border border-[#1c4575] rounded-3xl p-6 shadow-xl shadow-[#061324]/40">
           <div className="flex items-center space-x-2 mb-6">
-            <MapPin className="w-5 h-5 text-[#E31837]" />
+            <MapPin className="w-5 h-5 text-[#B4975A]" />
             <h3 className="text-xl font-black text-white tracking-tight">Venues &amp; Arenas</h3>
           </div>
 

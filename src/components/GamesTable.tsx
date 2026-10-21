@@ -208,8 +208,8 @@ export const GamesTable: React.FC<GamesTableProps> = ({
                 {/* Season Section Header */}
                 <div className="flex flex-wrap items-center justify-between gap-2 px-1">
                   <div className="flex items-center space-x-2.5">
-                    <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-[#C69214]/20 border border-[#B4975A]/40 text-[#E0B543]">
-                      <Trophy className="w-4 h-4 text-[#E0B543]" />
+                    <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-[#061324] border border-[#B4975A] text-[#B4975A]">
+                      <Trophy className="w-4 h-4 text-[#B4975A]" />
                     </span>
                     <h3 className="text-xl font-black text-white tracking-wide">
                       {group.season} <span className="text-sm font-semibold text-[#B4975A]">Season</span>
@@ -219,18 +219,18 @@ export const GamesTable: React.FC<GamesTableProps> = ({
                     <span className="px-2.5 py-1 bg-[#061324] border border-[#1c4575] rounded-full text-slate-300 font-medium">
                       {group.games.length} {group.games.length === 1 ? 'Game' : 'Games'}
                     </span>
-                    <span className="px-2.5 py-1 bg-[#061324] border border-[#1c4575] rounded-full text-[#E0B543] font-bold">
+                    <span className="px-2.5 py-1 bg-[#061324] border border-[#1c4575] rounded-full text-[#B4975A] font-bold">
                       {group.totalPoints} Total PTS
                     </span>
                   </div>
                 </div>
 
                 {/* Table for this Season */}
-                <div className="bg-[#0C2340]/90 border border-[#1c4575] rounded-3xl overflow-hidden shadow-2xl shadow-[#061324]/50">
+                <div className="bg-[#0C2340] border border-[#1c4575] rounded-3xl overflow-hidden shadow-2xl shadow-[#061324]/50">
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="border-b border-[#1c4575] bg-[#061324]/90 text-[11px] uppercase tracking-wider text-[#B4975A] font-bold">
+                        <tr className="border-b border-[#1c4575] bg-[#061324] text-[11px] uppercase tracking-wider text-[#B4975A] font-bold">
                           <th className="py-4 px-5">Date &amp; League</th>
                           <th className="py-4 px-5">Matchup</th>
                           <th className="py-4 px-5 text-center">Score</th>
@@ -254,23 +254,23 @@ export const GamesTable: React.FC<GamesTableProps> = ({
                             >
                               {/* Date & League */}
                               <td className="py-4 px-5 whitespace-nowrap">
-                                <div className="font-bold text-white group-hover:text-[#E0B543] transition-colors">
+                                <div className="font-bold text-white group-hover:text-[#B4975A] transition-colors">
                                   {game.formattedDate || game.date}
                                 </div>
                                 <div className="flex items-center space-x-1.5 mt-0.5">
                                   <span
                                     className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-extrabold uppercase ${
                                       game.sourceType === 'nba'
-                                        ? 'bg-[#0C2340] text-[#E0B543] border border-[#B4975A]/60'
+                                        ? 'bg-[#061324] text-[#B4975A] border border-[#B4975A]/60'
                                         : game.sourceType === 'cbb'
-                                        ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-500/40'
-                                        : 'bg-purple-950/80 text-purple-300 border border-purple-500/40'
+                                        ? 'bg-[#061324] text-slate-200 border border-[#1c4575]'
+                                        : 'bg-[#061324] text-slate-200 border border-[#1c4575]'
                                     }`}
                                   >
                                     {game.sourceType === 'cbb' ? 'NCAA' : game.sourceType.toUpperCase()}
                                   </span>
                                   {game.isOvertime && (
-                                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#C8102E]/20 text-[#E31837] border border-[#C8102E]/40">
+                                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#061324] text-[#B4975A] border border-[#B4975A]">
                                       OT
                                     </span>
                                   )}
@@ -281,20 +281,20 @@ export const GamesTable: React.FC<GamesTableProps> = ({
                               <td className="py-4 px-5">
                                 <div className="space-y-1">
                                   {/* Away */}
-                                  <div className={`flex items-center space-x-2 ${isAwayWinner ? 'font-bold text-white' : 'text-slate-300/80'}`}>
+                                  <div className={`flex items-center space-x-2 ${isAwayWinner ? 'font-bold text-white' : 'text-slate-300'}`}>
                                     <span className="w-10 text-xs uppercase font-mono tracking-wider text-[#B4975A]">
                                       {game.awayTeam.shortName || 'AWY'}
                                     </span>
                                     <span className="truncate">{game.awayTeam.name}</span>
-                                    {isAwayWinner && <span className="text-[10px] text-emerald-400 font-bold">✓</span>}
+                                    {isAwayWinner && <span className="text-[10px] text-[#B4975A] font-bold">✓</span>}
                                   </div>
                                   {/* Home */}
-                                  <div className={`flex items-center space-x-2 ${isHomeWinner ? 'font-bold text-white' : 'text-slate-300/80'}`}>
+                                  <div className={`flex items-center space-x-2 ${isHomeWinner ? 'font-bold text-white' : 'text-slate-300'}`}>
                                     <span className="w-10 text-xs uppercase font-mono tracking-wider text-[#B4975A]">
                                       {game.homeTeam.shortName || 'HME'}
                                     </span>
                                     <span className="truncate">{game.homeTeam.name}</span>
-                                    {isHomeWinner && <span className="text-[10px] text-emerald-400 font-bold">✓</span>}
+                                    {isHomeWinner && <span className="text-[10px] text-[#B4975A] font-bold">✓</span>}
                                   </div>
                                 </div>
                               </td>
@@ -317,10 +317,10 @@ export const GamesTable: React.FC<GamesTableProps> = ({
                                 {topScorer ? (
                                   <div>
                                     <div className="font-semibold text-slate-100 text-xs flex items-center space-x-1">
-                                      <Award className="w-3.5 h-3.5 text-[#E0B543] shrink-0" />
+                                      <Award className="w-3.5 h-3.5 text-[#B4975A] shrink-0" />
                                       <span>{topScorer.name}</span>
                                     </div>
-                                    <div className="text-[11px] text-[#E0B543] font-bold pl-4.5">
+                                    <div className="text-[11px] text-[#B4975A] font-bold pl-4.5">
                                       {topScorer.pts} PTS ({topScorer.team})
                                     </div>
                                   </div>
@@ -333,7 +333,7 @@ export const GamesTable: React.FC<GamesTableProps> = ({
                               <td className="py-4 px-5 max-w-[180px] truncate">
                                 {game.arena ? (
                                   <div className="flex items-center space-x-1.5 text-xs text-slate-300 truncate">
-                                    <MapPin className="w-3.5 h-3.5 text-[#E31837] shrink-0" />
+                                    <MapPin className="w-3.5 h-3.5 text-[#B4975A] shrink-0" />
                                     <span className="truncate">{game.arena}</span>
                                   </div>
                                 ) : (
@@ -344,7 +344,7 @@ export const GamesTable: React.FC<GamesTableProps> = ({
                               {/* Personal Notes */}
                               <td className="py-4 px-5 max-w-[200px]">
                                 {game.notes ? (
-                                  <div className="flex items-center space-x-1.5 text-xs text-[#E0B543] truncate bg-[#C69214]/15 px-2.5 py-1 rounded-lg border border-[#C69214]/30">
+                                  <div className="flex items-center space-x-1.5 text-xs text-[#B4975A] truncate bg-[#061324] px-2.5 py-1 rounded-lg border border-[#B4975A]/40">
                                     <StickyNote className="w-3 h-3 text-[#B4975A] shrink-0" />
                                     <span className="truncate">{game.notes}</span>
                                   </div>

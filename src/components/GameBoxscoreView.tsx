@@ -64,15 +64,12 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
         </a>
       </div>
 
-      {/* Main Scoreboard Card (Pelicans Navy & Gold Gradient) */}
-      <div className="bg-gradient-to-b from-[#0C2340] to-[#061324] border border-[#1c4575] rounded-3xl p-6 sm:p-8 shadow-2xl shadow-[#061324]/80 relative overflow-hidden">
-        {/* Subtle gold glow */}
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#C69214]/10 rounded-full blur-3xl pointer-events-none" />
-
+      {/* Main Scoreboard Card (Solid Deep Navy & Gold) */}
+      <div className="bg-[#0C2340] border border-[#1c4575] rounded-3xl p-6 sm:p-8 shadow-2xl shadow-[#061324]/80 relative overflow-hidden">
         {/* Date, League, Arena info */}
         <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-300 pb-6 border-b border-[#1c4575]/80">
           <div className="flex items-center space-x-3">
-            <span className="px-2.5 py-0.5 rounded text-[11px] font-black uppercase bg-[#C69214]/20 text-[#E0B543] border border-[#C69214]/40 tracking-wider">
+            <span className="px-2.5 py-0.5 rounded text-[11px] font-black uppercase bg-[#061324] text-[#B4975A] border border-[#B4975A]/60 tracking-wider">
               {game.sourceType === 'cbb' ? 'NCAA Men\'s Basketball' : game.sourceType.toUpperCase()}
             </span>
             <span className="flex items-center space-x-1">
@@ -84,7 +81,7 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
           <div className="flex items-center space-x-4">
             {game.arena && (
               <span className="flex items-center space-x-1">
-                <MapPin className="w-3.5 h-3.5 text-[#E31837]" />
+                <MapPin className="w-3.5 h-3.5 text-[#B4975A]" />
                 <span className="text-slate-200 font-medium">{game.arena}</span>
               </span>
             )}
