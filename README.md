@@ -2,7 +2,7 @@
 
 CourtPass is a Vite + React web application designed for basketball fans to log every game they attend in person, scrape full box scores from **Basketball Reference** (NBA/WNBA) and **Sports Reference** (NCAA Men's College Basketball), persist everything to a local `data/games.json` file, and view deep analytics on teams and players they've seen live.
 
-It is fully deployable to **GitHub Pages** and includes a **GitHub Actions workflow** (`workflow_dispatch`) that allows you to scrape new games on demand with automatic commit, data persistence, and redeployment.
+It is fully deployable to **GitHub Pages** and includes **GitHub Actions workflows** (`workflow_dispatch`) that allow you to scrape new games or remove games on demand with automatic commit, data persistence, and redeployment.
 
 ---
 
@@ -44,42 +44,35 @@ npm run dev
 
 ---
 
-## 🤖 Scraping via CLI
+## 🤖 CLI Commands
 
-You can scrape and log a game anytime from the command line:
-
+### Scrape & Add a Game
 ```bash
 npm run scrape -- --url "https://www.basketball-reference.com/boxscores/202411110NOP.html" --notes "Sat in section 112 with friends"
 ```
 
-Or for College Basketball:
+### Remove a Game
 ```bash
-npm run scrape -- --url "https://www.sports-reference.com/cbb/boxscores/2024-11-06-20-louisiana-state.html" --notes "Season opener at PMAC"
+npm run delete-game -- --target "nba-202411110NOP"
 ```
 
 ---
 
-## 🌐 Deploying to GitHub Pages & Running GitHub Action
+## 🌐 GitHub Actions & GitHub Pages
 
 ### Step 1: Enable GitHub Pages
 1. In your GitHub repository, go to **Settings** → **Pages**.
 2. Under **Build and deployment** → **Source**, select **GitHub Actions**.
 
-### Step 2: Manually Scrape a Game via GitHub Action
-Whenever you attend a game and want to log it:
+### Step 2: Add a Game via GitHub Action
 1. Go to your repository's **Actions** tab.
 2. Select **"Scrape Game & Deploy to GitHub Pages"** in the left sidebar.
-3. Click **Run workflow**.
-4. Paste the Basketball-Reference or Sports-Reference URL into the **Boxscore URL** field.
-5. (Optional) Enter personal memory notes in the **Personal notes** field.
-6. Click the green **Run workflow** button.
+3. Click **Run workflow**, paste your box score URL, and click **Run workflow**.
 
-The workflow will:
-1. Fetch and scrape the box score data using the scraper CLI.
-2. Update [`data/games.json`](data/games.json).
-3. Commit and push the updated JSON back to the `main` branch.
-4. Build the Vite React application.
-5. Re-publish the updated site to GitHub Pages!
+### Step 3: Remove a Game via GitHub Action
+1. Go to your repository's **Actions** tab.
+2. Select **"Remove Game & Deploy to GitHub Pages"** in the left sidebar.
+3. Click **Run workflow**, enter the **Game ID** (e.g. `nba-202411110NOP` or the box score URL), and click **Run workflow**.
 
 ---
 
@@ -87,12 +80,14 @@ The workflow will:
 
 ```
 ├── .github/workflows/
-│   ├── scrape-and-deploy.yml   # Manual workflow_dispatch to scrape + commit + deploy
+│   ├── scrape-and-deploy.yml   # Manual workflow to scrape + commit + deploy
+│   ├── remove-game.yml         # Manual workflow to remove game + commit + deploy
 │   └── deploy-pages.yml        # Automatic deploy on push to main
 ├── data/
 │   └── games.json              # Local persistent JSON database of all attended games
 ├── scripts/
 │   ├── scrape-game.ts          # CLI scraping entrypoint
+│   ├── delete-game.ts          # CLI delete entrypoint
 │   └── sync-data.ts            # Mirrors data/games.json into public/ for static Vite builds
 ├── server/
 │   ├── index.ts                # Express REST API

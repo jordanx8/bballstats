@@ -12,6 +12,7 @@
     "preview": "vite preview",
     "start": "tsx server/index.ts",
     "scrape": "tsx scripts/scrape-game.ts",
+    "delete-game": "tsx scripts/delete-game.ts",
     "sync-data": "tsx scripts/sync-data.ts"
   },
   "dependencies": {
