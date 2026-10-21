@@ -652,35 +652,6 @@
     "submittedAt": "2026-10-21T15:15:11.728Z"
   },
   {
-    "id": "cbb-2025-11-10-20-louisiana-state\\n",
-    "sourceUrl": "https://www.sports-reference.com/cbb/boxscores/2025-11-10-20-louisiana-state.html\\n",
-    "sourceType": "cbb",
-    "date": "2025-11-10",
-    "formattedDate": "November 10, 2025",
-    "arena": "Pete Maravich Assembly Center (Baton Rouge, LA)",
-    "awayTeam": {
-      "name": "Away Team",
-      "shortName": "AWAY",
-      "score": 0,
-      "lineScores": [
-        0
-      ],
-      "players": []
-    },
-    "homeTeam": {
-      "name": "Home Team",
-      "shortName": "HOME",
-      "score": 0,
-      "lineScores": [
-        0
-      ],
-      "players": []
-    },
-    "winner": "home",
-    "isOvertime": false,
-    "submittedAt": "2026-10-21T17:23:28.683Z"
-  },
-  {
     "id": "cbb-2025-11-05-20-louisiana-state",
     "sourceUrl": "https://www.sports-reference.com/cbb/boxscores/2025-11-05-20-louisiana-state.html",
     "sourceType": "cbb",
