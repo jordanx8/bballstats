@@ -9,19 +9,29 @@ const execFileAsync = promisify(execFile);
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 
 async function fetchHtmlWithCurl(url: string): Promise<string> {
+  const curlCmd = process.platform === 'win32' ? 'curl.exe' : 'curl';
+  const args = [
+    '-s',
+    '-L',
+    '--compressed',
+    '-A', USER_AGENT,
+    '-H', 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+    '-H', 'Accept-Language: en-US,en;q=0.9',
+    url,
+  ];
+
   try {
-    const { stdout } = await execFileAsync('curl.exe', [
-      '-s',
-      '-L',
-      '--compressed',
-      '-A', USER_AGENT,
-      '-H', 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-      '-H', 'Accept-Language: en-US,en;q=0.9',
-      url,
-    ], { maxBuffer: 15 * 1024 * 1024 });
+    const { stdout } = await execFileAsync(curlCmd, args, { maxBuffer: 15 * 1024 * 1024 });
     return stdout;
   } catch (err: any) {
-    throw new Error(`Curl fetch failed: ${err.message}`);
+    // If the primary command fails, try the alternative binary name (e.g. 'curl' vs 'curl.exe')
+    const altCmd = curlCmd === 'curl.exe' ? 'curl' : 'curl.exe';
+    try {
+      const { stdout } = await execFileAsync(altCmd, args, { maxBuffer: 15 * 1024 * 1024 });
+      return stdout;
+    } catch {
+      throw new Error(`Curl fetch failed: ${err.message}`);
+    }
   }
 }
 
@@ -173,19 +183,51 @@ export function parseBoxscoreHtml(rawHtml: string, url: string, defaultSourceTyp
     }
   }
 
-  // Arena & Attendance
-  $('.scorebox_meta div, .scorebox_meta p').each((_, el) => {
-    const t = $(el).text();
-    if (t.includes('Arena:') || t.includes('Location:')) {
-      arena = t.replace(/Arena:|Location:/i, '').trim();
-    }
-    if (t.includes('Attendance:')) {
+  // Arena & Attendance Extraction
+  $('.scorebox_meta div, .scorebox_meta p, .scorebox div, .scorebox p').each((_, el) => {
+    const t = $(el).text().trim();
+    if (!t) return;
+
+    if (/Attendance:\s*([\d,]+)/i.test(t)) {
       const attMatch = t.match(/Attendance:\s*([\d,]+)/i);
       if (attMatch) {
         attendance = attMatch[1].replace(/,/g, '');
       }
     }
+    if (/^(?:Arena|Location|Venue):\s*(.+)$/i.test(t)) {
+      const match = t.match(/^(?:Arena|Location|Venue):\s*(.+)$/i);
+      if (match && match[1]) {
+        arena = match[1].trim();
+      }
+    }
   });
+
+  // If arena was not explicitly labeled with Arena:/Location:, inspect .scorebox_meta child divs
+  if (!arena) {
+    $('.scorebox_meta > div, .scorebox_meta > p').each((_, el) => {
+      if (arena) return;
+      const t = $(el).text().trim();
+      if (!t) return;
+
+      const isDateOrTime = /(?:January|February|March|April|May|June|July|August|September|October|November|December|\d{1,2}:\d{2}\s*(?:AM|PM)|\b\d{4}\b)/i.test(t) &&
+                           (t.includes('PM') || t.includes('AM') || /,\s*\d{4}/.test(t));
+      const isLogo = /logo/i.test(t) || $(el).find('a[href*="logo"]').length > 0;
+      const isAttendance = /attendance/i.test(t);
+      const isOfficial = /official/i.test(t);
+
+      if (!isDateOrTime && !isLogo && !isAttendance && !isOfficial && t.length > 2) {
+        arena = t;
+      }
+    });
+  }
+
+  // Fallback to arena links if available
+  if (!arena) {
+    const arenaLink = $('a[href*="/arenas/"], a[href*="/stadiums/"]').first().text().trim();
+    if (arenaLink) {
+      arena = arenaLink;
+    }
+  }
 
   // 2. Parse Line Score table (quarters / halves)
   let lineScoreTable = $('#line_score, #line-score, table.linescore');

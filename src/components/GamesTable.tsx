@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Game } from '../types';
-import { Search, Calendar, MapPin, Award, StickyNote } from 'lucide-react';
+import { Search, Calendar, MapPin, Award, StickyNote, Trophy } from 'lucide-react';
+import { getGameSeason } from '../services/statsCalculator';
 
 interface GamesTableProps {
   games: Game[];
@@ -15,11 +16,27 @@ export const GamesTable: React.FC<GamesTableProps> = ({
 }) => {
   const [search, setSearch] = useState(initialSearchQuery);
   const [leagueFilter, setLeagueFilter] = useState<string>('all');
+  const [seasonFilter, setSeasonFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'date_desc' | 'date_asc' | 'pts_desc' | 'margin_desc'>('date_desc');
+
+  // Available unique seasons
+  const availableSeasons = useMemo(() => {
+    const seasons = new Set<string>();
+    for (const g of games) {
+      seasons.add(getGameSeason(g.date, g.sourceType));
+    }
+    return Array.from(seasons).sort((a, b) => b.localeCompare(a));
+  }, [games]);
 
   // Filter and sort games
   const filteredGames = useMemo(() => {
     return games.filter((game) => {
+      // Season filter
+      if (seasonFilter !== 'all') {
+        const season = getGameSeason(game.date, game.sourceType);
+        if (season !== seasonFilter) return false;
+      }
+
       // League filter
       if (leagueFilter !== 'all' && game.sourceType !== leagueFilter) {
         return false;
@@ -119,7 +136,21 @@ export const GamesTable: React.FC<GamesTableProps> = ({
         </div>
 
         {/* Filter controls */}
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Season Filter */}
+          <select
+            value={seasonFilter}
+            onChange={(e) => setSeasonFilter(e.target.value)}
+            className="bg-[#061324] border border-[#1c4575] focus:border-[#C69214] rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none font-medium"
+          >
+            <option value="all">All Seasons</option>
+            {availableSeasons.map((s) => (
+              <option key={s} value={s}>
+                {s} Season
+              </option>
+            ))}
+          </select>
+
           {/* League Filter */}
           <select
             value={leagueFilter}
@@ -146,158 +177,201 @@ export const GamesTable: React.FC<GamesTableProps> = ({
         </div>
       </div>
 
-      {/* Table of Games */}
+      {/* Season-Separated Game Groups */}
       {filteredGames.length === 0 ? (
         <div className="bg-[#0C2340]/40 border border-[#1c4575]/80 rounded-2xl p-12 text-center">
           <Calendar className="w-12 h-12 text-slate-500 mx-auto mb-3" />
           <h3 className="text-base font-bold text-slate-200">No games matched your search</h3>
           <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
-            Try adjusting your search query or league filter.
+            Try adjusting your search query, season, or league filter.
           </p>
         </div>
       ) : (
-        <div className="bg-[#0C2340]/90 border border-[#1c4575] rounded-3xl overflow-hidden shadow-2xl shadow-[#061324]/50">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-[#1c4575] bg-[#061324]/90 text-[11px] uppercase tracking-wider text-[#B4975A] font-bold">
-                  <th className="py-4 px-5">Date &amp; League</th>
-                  <th className="py-4 px-5">Matchup</th>
-                  <th className="py-4 px-5 text-center">Score</th>
-                  <th className="py-4 px-5">Top Scorer</th>
-                  <th className="py-4 px-5">Venue</th>
-                  <th className="py-4 px-5">Notes / Memories</th>
-                  <th className="py-4 px-5 text-right">View</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#1c4575]/60 text-sm">
-                {filteredGames.map((game) => {
-                  const topScorer = getGameTopScorer(game);
-                  const isAwayWinner = game.winner === 'away';
-                  const isHomeWinner = game.winner === 'home';
+        <div className="space-y-8">
+          {(() => {
+            // Group filtered games by season
+            const groups: { [season: string]: { season: string; games: Game[]; totalPoints: number } } = {};
+            for (const game of filteredGames) {
+              const season = getGameSeason(game.date, game.sourceType);
+              if (!groups[season]) {
+                groups[season] = { season, games: [], totalPoints: 0 };
+              }
+              groups[season].games.push(game);
+              groups[season].totalPoints += (game.awayTeam.score + game.homeTeam.score);
+            }
 
-                  return (
-                    <tr
-                      key={game.id}
-                      onClick={() => onSelectGame(game)}
-                      className="group hover:bg-[#16365C]/80 cursor-pointer transition-colors"
-                    >
-                      {/* Date & League */}
-                      <td className="py-4 px-5 whitespace-nowrap">
-                        <div className="font-bold text-white group-hover:text-[#E0B543] transition-colors">
-                          {game.formattedDate || game.date}
-                        </div>
-                        <div className="flex items-center space-x-1.5 mt-0.5">
-                          <span
-                            className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-extrabold uppercase ${
-                              game.sourceType === 'nba'
-                                ? 'bg-[#0C2340] text-[#E0B543] border border-[#B4975A]/60'
-                                : game.sourceType === 'cbb'
-                                ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-500/40'
-                                : 'bg-purple-950/80 text-purple-300 border border-purple-500/40'
-                            }`}
-                          >
-                            {game.sourceType === 'cbb' ? 'NCAA' : game.sourceType.toUpperCase()}
-                          </span>
-                          {game.isOvertime && (
-                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#C8102E]/20 text-[#E31837] border border-[#C8102E]/40">
-                              OT
-                            </span>
-                          )}
-                        </div>
-                      </td>
+            // Sort season groups descending (newest season first e.g. 2025-26, then 2024-25)
+            const sortedGroups = Object.values(groups).sort((a, b) => b.season.localeCompare(a.season));
 
-                      {/* Matchup */}
-                      <td className="py-4 px-5">
-                        <div className="space-y-1">
-                          {/* Away */}
-                          <div className={`flex items-center space-x-2 ${isAwayWinner ? 'font-bold text-white' : 'text-slate-300/80'}`}>
-                            <span className="w-10 text-xs uppercase font-mono tracking-wider text-[#B4975A]">
-                              {game.awayTeam.shortName || 'AWY'}
-                            </span>
-                            <span className="truncate">{game.awayTeam.name}</span>
-                            {isAwayWinner && <span className="text-[10px] text-emerald-400 font-bold">✓</span>}
-                          </div>
-                          {/* Home */}
-                          <div className={`flex items-center space-x-2 ${isHomeWinner ? 'font-bold text-white' : 'text-slate-300/80'}`}>
-                            <span className="w-10 text-xs uppercase font-mono tracking-wider text-[#B4975A]">
-                              {game.homeTeam.shortName || 'HME'}
-                            </span>
-                            <span className="truncate">{game.homeTeam.name}</span>
-                            {isHomeWinner && <span className="text-[10px] text-emerald-400 font-bold">✓</span>}
-                          </div>
-                        </div>
-                      </td>
+            return sortedGroups.map((group) => (
+              <div key={group.season} className="space-y-3">
+                {/* Season Section Header */}
+                <div className="flex flex-wrap items-center justify-between gap-2 px-1">
+                  <div className="flex items-center space-x-2.5">
+                    <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-[#C69214]/20 border border-[#B4975A]/40 text-[#E0B543]">
+                      <Trophy className="w-4 h-4 text-[#E0B543]" />
+                    </span>
+                    <h3 className="text-xl font-black text-white tracking-wide">
+                      {group.season} <span className="text-sm font-semibold text-[#B4975A]">Season</span>
+                    </h3>
+                  </div>
+                  <div className="flex items-center space-x-2 text-xs">
+                    <span className="px-2.5 py-1 bg-[#061324] border border-[#1c4575] rounded-full text-slate-300 font-medium">
+                      {group.games.length} {group.games.length === 1 ? 'Game' : 'Games'}
+                    </span>
+                    <span className="px-2.5 py-1 bg-[#061324] border border-[#1c4575] rounded-full text-[#E0B543] font-bold">
+                      {group.totalPoints} Total PTS
+                    </span>
+                  </div>
+                </div>
 
-                      {/* Score */}
-                      <td className="py-4 px-5 text-center whitespace-nowrap">
-                        <div className="inline-flex items-center space-x-2 px-3 py-1 bg-[#061324] rounded-xl border border-[#1c4575] font-mono">
-                          <span className={isAwayWinner ? 'font-black text-white' : 'text-slate-400'}>
-                            {game.awayTeam.score}
-                          </span>
-                          <span className="text-slate-500">-</span>
-                          <span className={isHomeWinner ? 'font-black text-white' : 'text-slate-400'}>
-                            {game.homeTeam.score}
-                          </span>
-                        </div>
-                      </td>
+                {/* Table for this Season */}
+                <div className="bg-[#0C2340]/90 border border-[#1c4575] rounded-3xl overflow-hidden shadow-2xl shadow-[#061324]/50">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-[#1c4575] bg-[#061324]/90 text-[11px] uppercase tracking-wider text-[#B4975A] font-bold">
+                          <th className="py-4 px-5">Date &amp; League</th>
+                          <th className="py-4 px-5">Matchup</th>
+                          <th className="py-4 px-5 text-center">Score</th>
+                          <th className="py-4 px-5">Top Scorer</th>
+                          <th className="py-4 px-5">Venue</th>
+                          <th className="py-4 px-5">Notes / Memories</th>
+                          <th className="py-4 px-5 text-right">View</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#1c4575]/60 text-sm">
+                        {group.games.map((game) => {
+                          const topScorer = getGameTopScorer(game);
+                          const isAwayWinner = game.winner === 'away';
+                          const isHomeWinner = game.winner === 'home';
 
-                      {/* Top Scorer */}
-                      <td className="py-4 px-5 whitespace-nowrap">
-                        {topScorer ? (
-                          <div>
-                            <div className="font-semibold text-slate-100 text-xs flex items-center space-x-1">
-                              <Award className="w-3.5 h-3.5 text-[#E0B543] shrink-0" />
-                              <span>{topScorer.name}</span>
-                            </div>
-                            <div className="text-[11px] text-[#E0B543] font-bold pl-4.5">
-                              {topScorer.pts} PTS ({topScorer.team})
-                            </div>
-                          </div>
-                        ) : (
-                          <span className="text-xs text-slate-400">-</span>
-                        )}
-                      </td>
+                          return (
+                            <tr
+                              key={game.id}
+                              onClick={() => onSelectGame(game)}
+                              className="group hover:bg-[#16365C]/80 cursor-pointer transition-colors"
+                            >
+                              {/* Date & League */}
+                              <td className="py-4 px-5 whitespace-nowrap">
+                                <div className="font-bold text-white group-hover:text-[#E0B543] transition-colors">
+                                  {game.formattedDate || game.date}
+                                </div>
+                                <div className="flex items-center space-x-1.5 mt-0.5">
+                                  <span
+                                    className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-extrabold uppercase ${
+                                      game.sourceType === 'nba'
+                                        ? 'bg-[#0C2340] text-[#E0B543] border border-[#B4975A]/60'
+                                        : game.sourceType === 'cbb'
+                                        ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-500/40'
+                                        : 'bg-purple-950/80 text-purple-300 border border-purple-500/40'
+                                    }`}
+                                  >
+                                    {game.sourceType === 'cbb' ? 'NCAA' : game.sourceType.toUpperCase()}
+                                  </span>
+                                  {game.isOvertime && (
+                                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#C8102E]/20 text-[#E31837] border border-[#C8102E]/40">
+                                      OT
+                                    </span>
+                                  )}
+                                </div>
+                              </td>
 
-                      {/* Venue */}
-                      <td className="py-4 px-5 max-w-[180px] truncate">
-                        {game.arena ? (
-                          <div className="flex items-center space-x-1.5 text-xs text-slate-300 truncate">
-                            <MapPin className="w-3.5 h-3.5 text-[#E31837] shrink-0" />
-                            <span className="truncate">{game.arena}</span>
-                          </div>
-                        ) : (
-                          <span className="text-xs text-slate-500">-</span>
-                        )}
-                      </td>
+                              {/* Matchup */}
+                              <td className="py-4 px-5">
+                                <div className="space-y-1">
+                                  {/* Away */}
+                                  <div className={`flex items-center space-x-2 ${isAwayWinner ? 'font-bold text-white' : 'text-slate-300/80'}`}>
+                                    <span className="w-10 text-xs uppercase font-mono tracking-wider text-[#B4975A]">
+                                      {game.awayTeam.shortName || 'AWY'}
+                                    </span>
+                                    <span className="truncate">{game.awayTeam.name}</span>
+                                    {isAwayWinner && <span className="text-[10px] text-emerald-400 font-bold">✓</span>}
+                                  </div>
+                                  {/* Home */}
+                                  <div className={`flex items-center space-x-2 ${isHomeWinner ? 'font-bold text-white' : 'text-slate-300/80'}`}>
+                                    <span className="w-10 text-xs uppercase font-mono tracking-wider text-[#B4975A]">
+                                      {game.homeTeam.shortName || 'HME'}
+                                    </span>
+                                    <span className="truncate">{game.homeTeam.name}</span>
+                                    {isHomeWinner && <span className="text-[10px] text-emerald-400 font-bold">✓</span>}
+                                  </div>
+                                </div>
+                              </td>
 
-                      {/* Personal Notes */}
-                      <td className="py-4 px-5 max-w-[200px]">
-                        {game.notes ? (
-                          <div className="flex items-center space-x-1.5 text-xs text-[#E0B543] truncate bg-[#C69214]/15 px-2.5 py-1 rounded-lg border border-[#C69214]/30">
-                            <StickyNote className="w-3 h-3 text-[#B4975A] shrink-0" />
-                            <span className="truncate">{game.notes}</span>
-                          </div>
-                        ) : (
-                          <span className="text-xs text-slate-500 italic">No notes</span>
-                        )}
-                      </td>
+                              {/* Score */}
+                              <td className="py-4 px-5 text-center whitespace-nowrap">
+                                <div className="inline-flex items-center space-x-2 px-3 py-1 bg-[#061324] rounded-xl border border-[#1c4575] font-mono">
+                                  <span className={isAwayWinner ? 'font-black text-white' : 'text-slate-400'}>
+                                    {game.awayTeam.score}
+                                  </span>
+                                  <span className="text-slate-500">-</span>
+                                  <span className={isHomeWinner ? 'font-black text-white' : 'text-slate-400'}>
+                                    {game.homeTeam.score}
+                                  </span>
+                                </div>
+                              </td>
 
-                      {/* Action */}
-                      <td className="py-4 px-5 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                        <button
-                          onClick={() => onSelectGame(game)}
-                          className="px-3 py-1.5 bg-[#061324] hover:bg-[#C69214] text-slate-200 hover:text-[#0C2340] border border-[#1c4575] hover:border-[#B4975A] rounded-xl text-xs font-bold transition-all shadow-sm"
-                        >
-                          Boxscore
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                              {/* Top Scorer */}
+                              <td className="py-4 px-5 whitespace-nowrap">
+                                {topScorer ? (
+                                  <div>
+                                    <div className="font-semibold text-slate-100 text-xs flex items-center space-x-1">
+                                      <Award className="w-3.5 h-3.5 text-[#E0B543] shrink-0" />
+                                      <span>{topScorer.name}</span>
+                                    </div>
+                                    <div className="text-[11px] text-[#E0B543] font-bold pl-4.5">
+                                      {topScorer.pts} PTS ({topScorer.team})
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <span className="text-xs text-slate-400">-</span>
+                                )}
+                              </td>
+
+                              {/* Venue */}
+                              <td className="py-4 px-5 max-w-[180px] truncate">
+                                {game.arena ? (
+                                  <div className="flex items-center space-x-1.5 text-xs text-slate-300 truncate">
+                                    <MapPin className="w-3.5 h-3.5 text-[#E31837] shrink-0" />
+                                    <span className="truncate">{game.arena}</span>
+                                  </div>
+                                ) : (
+                                  <span className="text-xs text-slate-500">-</span>
+                                )}
+                              </td>
+
+                              {/* Personal Notes */}
+                              <td className="py-4 px-5 max-w-[200px]">
+                                {game.notes ? (
+                                  <div className="flex items-center space-x-1.5 text-xs text-[#E0B543] truncate bg-[#C69214]/15 px-2.5 py-1 rounded-lg border border-[#C69214]/30">
+                                    <StickyNote className="w-3 h-3 text-[#B4975A] shrink-0" />
+                                    <span className="truncate">{game.notes}</span>
+                                  </div>
+                                ) : (
+                                  <span className="text-xs text-slate-500 italic">No notes</span>
+                                )}
+                              </td>
+
+                              {/* Action */}
+                              <td className="py-4 px-5 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                                <button
+                                  onClick={() => onSelectGame(game)}
+                                  className="px-3 py-1.5 bg-[#061324] hover:bg-[#C69214] text-slate-200 hover:text-[#0C2340] border border-[#1c4575] hover:border-[#B4975A] rounded-xl text-xs font-bold transition-all shadow-sm"
+                                >
+                                  Boxscore
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            ));
+          })()}
         </div>
       )}
     </div>

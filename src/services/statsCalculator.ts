@@ -1,5 +1,36 @@
 import { Game, UserStatsSummary, AggregatedPlayerStat, AggregatedTeamStat } from '../types';
 
+export function getGameSeason(gameDateStr: string, _sourceType?: string): string {
+  const d = new Date(gameDateStr);
+  let year = d.getFullYear();
+  let month = d.getMonth() + 1; // 1-12
+
+  if (isNaN(year) || isNaN(month)) {
+    const match = gameDateStr.match(/(\d{4})-(\d{2})/);
+    if (match) {
+      year = parseInt(match[1], 10);
+      month = parseInt(match[2], 10);
+    } else {
+      const yearMatch = gameDateStr.match(/\b(\d{4})\b/);
+      if (yearMatch) {
+        year = parseInt(yearMatch[1], 10);
+        month = 10;
+      } else {
+        return 'Unknown Season';
+      }
+    }
+  }
+
+  // Basketball seasons: Aug - Dec is start of year-(year+1), Jan - Jul is end of (year-1)-year
+  if (month >= 8) {
+    const nextYear2Digits = String((year + 1) % 100).padStart(2, '0');
+    return `${year}-${nextYear2Digits}`;
+  } else {
+    const currentYear2Digits = String(year % 100).padStart(2, '0');
+    return `${year - 1}-${currentYear2Digits}`;
+  }
+}
+
 export function computeStatsSummaryClient(games: Game[]): UserStatsSummary {
   if (games.length === 0) {
     return {
