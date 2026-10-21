@@ -219,14 +219,45 @@ export function parseBoxscoreHtml(rawHtml: string, url: string, defaultSourceTyp
   const basicTables: { teamKey: string; $table: any }[] = [];
 
   $('table').each((_, el) => {
-    const id = $(el).attr('id') || '';
-    const classes = $(el).attr('class') || '';
+    const id = ($(el).attr('id') || '').toLowerCase();
+    const classes = ($(el).attr('class') || '').toLowerCase();
 
-    if (
-      (id.includes('-game-basic') || id.includes('box-score-basic-') || (classes.includes('stats_table') && !id.includes('advanced') && !id.includes('line_score') && !id.includes('line-score') && !id.includes('four_factors') && !id.includes('four-factors') && !id.includes('leaders'))) &&
-      !id.includes('advanced') && !id.includes('half') && !id.includes('q1') && !id.includes('q2') && !id.includes('q3') && !id.includes('q4')
-    ) {
-      basicTables.push({ teamKey: id, $table: $(el) });
+    // Ignore partial quarters, halves, overtimes, advanced stats, line scores, four factors
+    const isPeriodOrOther =
+      id.includes('advanced') ||
+      id.includes('-h1') ||
+      id.includes('-h2') ||
+      id.includes('-1h') ||
+      id.includes('-2h') ||
+      id.includes('half') ||
+      id.includes('-q1') ||
+      id.includes('-q2') ||
+      id.includes('-q3') ||
+      id.includes('-q4') ||
+      id.includes('-ot') ||
+      id.includes('line_score') ||
+      id.includes('line-score') ||
+      id.includes('four_factors') ||
+      id.includes('four-factors') ||
+      id.includes('leaders') ||
+      id.includes('plus_minus') ||
+      id.includes('plus-minus');
+
+    if (isPeriodOrOther) return;
+
+    // Must be a full game basic stats table:
+    // Basketball-Reference: box-XXX-game-basic
+    // Sports-Reference CBB: box-score-basic-XXX or XXX-game-basic
+    const isFullGameBasic =
+      id.endsWith('-game-basic') ||
+      id.startsWith('box-score-basic-') ||
+      (classes.includes('stats_table') && (id.includes('basic') || id.includes('box')) && !id.includes('q') && !id.includes('h'));
+
+    if (isFullGameBasic) {
+      // Avoid duplicate tables for the same team ID
+      if (!basicTables.some(t => t.teamKey === id)) {
+        basicTables.push({ teamKey: id, $table: $(el) });
+      }
     }
   });
 
@@ -312,6 +343,7 @@ export function parseBoxscoreHtml(rawHtml: string, url: string, defaultSourceTyp
 
 function parsePlayerTable($: cheerio.CheerioAPI, $table: any): { players: PlayerStats[]; totals?: TeamTotals } {
   const players: PlayerStats[] = [];
+  const seenPlayerNames = new Set<string>();
   let totals: TeamTotals | undefined;
 
   let isStarter = true;
@@ -336,6 +368,11 @@ function parsePlayerTable($: cheerio.CheerioAPI, $table: any): { players: Player
       isStarter = false;
       return;
     }
+
+    if (seenPlayerNames.has(playerName.toLowerCase())) {
+      return;
+    }
+    seenPlayerNames.add(playerName.toLowerCase());
 
     // Check for DNP (Did Not Play / Did Not Dress / Not With Team)
     const dnpCell = $row.find('td[data-stat="reason"], td[colspan]');

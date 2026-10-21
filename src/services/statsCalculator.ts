@@ -91,12 +91,19 @@ export function computeStatsSummaryClient(games: Game[]): UserStatsSummary {
     updateTeam(away, false, game.winner === 'away');
     updateTeam(home, true, game.winner === 'home');
 
-    // Player stats
+    // Player stats with per-game deduplication
+    const playersProcessedInThisGame = new Set<string>();
+
     const processPlayers = (players: typeof away.players, teamName: string) => {
       for (const p of players) {
         if (!p.name || p.dnpReason) continue;
-        const pEntry = playerMap.get(p.name) || {
-          playerName: p.name,
+        const normalizedName = p.name.trim();
+        const key = normalizedName.toLowerCase();
+        if (playersProcessedInThisGame.has(key)) continue;
+        playersProcessedInThisGame.add(key);
+
+        const pEntry = playerMap.get(normalizedName) || {
+          playerName: normalizedName,
           gamesSeen: 0,
           teamsPlayedFor: new Set<string>(),
           totalPts: 0,
@@ -123,11 +130,11 @@ export function computeStatsSummaryClient(games: Game[]): UserStatsSummary {
           pEntry.highScoreMatchup = matchupStr;
         }
 
-        playerMap.set(p.name, pEntry);
+        playerMap.set(normalizedName, pEntry);
 
         if (p.pts > 0) {
           allPerformances.push({
-            playerName: p.name,
+            playerName: normalizedName,
             points: p.pts,
             gameId: game.id,
             gameDate: game.formattedDate || game.date,
