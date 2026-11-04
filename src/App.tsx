@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react';
 import { Game, UserStatsSummary } from './types';
 import { fetchGames, fetchStats, updateGame } from './services/api';
-import { Navbar } from './components/Navbar';
+import { Navbar, TabKey } from './components/Navbar';
 import { Dashboard } from './components/Dashboard';
 import { GamesTable } from './components/GamesTable';
 import { GameBoxscoreView } from './components/GameBoxscoreView';
+import { PlayersLeaderboard } from './components/PlayersLeaderboard';
+import { TeamsLeaderboard } from './components/TeamsLeaderboard';
 import { Loader2, RefreshCw, AlertCircle } from 'lucide-react';
 
 export function App() {
   const [games, setGames] = useState<Game[]>([]);
   const [summary, setSummary] = useState<UserStatsSummary | null>(null);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'games'>('dashboard');
+  const [activeTab, setActiveTab] = useState<TabKey>('dashboard');
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -109,7 +111,13 @@ export function App() {
             onSelectGame={handleSelectGame}
             onFilterByTeam={handleFilterByTeam}
             onFilterByPlayer={handleFilterByPlayer}
+            onViewAllPlayers={() => setActiveTab('players')}
+            onViewAllTeams={() => setActiveTab('teams')}
           />
+        ) : activeTab === 'players' ? (
+          <PlayersLeaderboard games={games} onViewPlayerGames={handleFilterByPlayer} />
+        ) : activeTab === 'teams' ? (
+          <TeamsLeaderboard games={games} onViewTeamGames={handleFilterByTeam} />
         ) : (
           /* Chronological Games Journal Table */
           <GamesTable

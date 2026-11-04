@@ -14,11 +14,14 @@ All game additions and removals are managed cleanly via **GitHub Actions** (`wor
 - **Multi-Source Web Scraping**:
   - **Basketball Reference** (e.g. `https://www.basketball-reference.com/boxscores/202411110NOP.html`)
   - **Sports Reference CBB** (e.g. `https://www.sports-reference.com/cbb/boxscores/2024-11-06-20-louisiana-state.html`)
+- **Team Logos & Player Headshots**: Pulled from ESPN and stored in [`data/media.json`](data/media.json) (see `npm run build-media`). Anything without an image falls back to initials.
 - **Dashboard Analytics**:
   - **Most Seen Teams**: Frequency, win/loss records when you attend, win percentage, PPG, and home/away splits.
   - **Most Seen Players**: Frequency, scoring averages (PPG), rebounds (RPG), assists (APG), steals, blocks, and career-highs witnessed.
-  - **Top Single-Game Scoring Performances**: Direct leaderboard of the highest-scoring individual performances you've seen live.
+  - **Top Single-Game Performances**: Tabbed leaderboards (points, rebounds, assists, steals, blocks, 3PM, 3PA, FGM/FGA, FTM/FTA, offensive rebounds, turnovers) of the best individual games you've seen live.
   - **Venues & Arenas**: Track every arena visited.
+- **Players Leaderboard**: Every player you've seen, sortable by any stat, with search plus league / season / team / minimum-games filters and a totals vs. per-game toggle.
+- **Teams Leaderboard**: Every team you've seen with record, win %, PPG, opponent PPG, margin, and home/away split; searchable and filterable by league and season.
 - **Chronological Games Journal**:
   - Search by player, team, arena, date, or personal note.
   - Filter by league (NBA, NCAA, WNBA) and sort by date, total points, or blowout margin.
@@ -75,7 +78,12 @@ npm run import-games -- --file urls.txt
 
 # Remove a game locally:
 npm run delete-game -- --target "nba-202411110NOP"
+
+# Refresh team logos / player headshots (incremental; add --force to rebuild everything)
+npm run build-media
 ```
+
+The scrape and bulk-import workflows run `build-media` automatically and commit any changes to `data/media.json`.
 
 ---
 
@@ -88,8 +96,10 @@ npm run delete-game -- --target "nba-202411110NOP"
 │   ├── remove-game.yml             # Manual workflow to remove game + deploy
 │   └── deploy-pages.yml            # Automatic deploy on push to main
 ├── data/
-│   └── games.json                  # Local persistent JSON database of all attended games
+│   ├── games.json                  # Local persistent JSON database of all attended games
+│   └── media.json                  # Team logo + player headshot URL lookup (generated)
 ├── scripts/
+│   ├── build-media.ts              # Matches games to ESPN events to fetch logos & headshots
 │   ├── scrape-game.ts              # CLI scraping single game entrypoint
 │   ├── import-games.ts             # CLI bulk import entrypoint
 │   └── delete-game.ts              # CLI delete entrypoint
@@ -99,12 +109,18 @@ npm run delete-game -- --target "nba-202411110NOP"
 │   └── storage.ts              # JSON file reader/writer & stat aggregator
 ├── src/
 │   ├── components/
-│   │   ├── Dashboard.tsx       # Most seen teams, players, arenas & scoring leaderboards
+│   │   ├── Dashboard.tsx       # Most seen teams, players, arenas & tabbed performance leaderboards
 │   │   ├── GamesTable.tsx      # Chronological journal table with search & filters
 │   │   ├── GameBoxscoreView.tsx# Full player box score view & scoreboard
+│   │   ├── PlayersLeaderboard.tsx # Full searchable/filterable player leaderboard
+│   │   ├── TeamsLeaderboard.tsx   # Full searchable/filterable team leaderboard
+│   │   ├── Media.tsx           # TeamLogo / PlayerAvatar with initials fallback
 │   │   └── Navbar.tsx          # App navigation header in Pelicans theme
 │   ├── services/
 │   │   ├── api.ts              # API client with static fallback
+│   │   ├── leaderboards.ts     # Per-stat performance, player & team leaderboard aggregation
+│   │   ├── media.ts            # Lookup helpers over data/media.json
+│   │   ├── mediaKeys.ts        # Name normalisation shared with scripts/build-media.ts
 │   │   └── statsCalculator.ts  # Client-side statistics aggregator for GitHub Pages
 │   ├── types/
 │   │   └── index.ts            # TypeScript interfaces

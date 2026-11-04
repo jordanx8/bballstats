@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Game, UserStatsSummary } from '../types';
-import { 
-  Trophy, Flame, Users, Shield, MapPin, 
+import {
+  Trophy, Flame, Users, Shield, MapPin,
   ArrowRight, ChevronRight, Zap
 } from 'lucide-react';
+import { PlayerAvatar, TeamLogo } from './Media';
+import { PERFORMANCE_STATS, PerformanceStatKey, computeTopPerformances } from '../services/leaderboards';
 
 interface DashboardProps {
   summary: UserStatsSummary | null;
@@ -11,6 +13,8 @@ interface DashboardProps {
   onSelectGame: (game: Game) => void;
   onFilterByTeam: (teamName: string) => void;
   onFilterByPlayer: (playerName: string) => void;
+  onViewAllPlayers: () => void;
+  onViewAllTeams: () => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
@@ -19,9 +23,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onSelectGame,
   onFilterByTeam,
   onFilterByPlayer,
+  onViewAllPlayers,
+  onViewAllTeams,
 }) => {
   const [playerTab, setPlayerTab] = useState<'most_seen' | 'scoring' | 'playmaking' | 'rebounding'>('most_seen');
   const [teamTab, setTeamTab] = useState<'most_seen' | 'highest_winpct' | 'scoring'>('most_seen');
+  const [perfStat, setPerfStat] = useState<PerformanceStatKey>('pts');
+  const topPerformances = useMemo(() => computeTopPerformances(games, perfStat, 6), [games, perfStat]);
+  const perfMeta = PERFORMANCE_STATS.find(s => s.key === perfStat)!;
 
   if (!summary || games.length === 0) {
     return (
@@ -172,6 +181,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       <div className="w-7 h-7 rounded-xl bg-[#16365C] text-[#E0B543] group-hover:bg-[#C69214] group-hover:text-[#0C2340] border border-[#1c4575] flex items-center justify-center font-black text-xs transition-colors shrink-0">
                         {idx + 1}
                       </div>
+                      <TeamLogo name={team.teamName} size={36} />
                       <div className="min-w-0">
                         <div className="font-bold text-white group-hover:text-[#E0B543] transition-colors truncate text-sm">
                           {team.teamName}
@@ -206,10 +216,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
           {sortedTeams.length > 6 && (
             <div className="mt-4 pt-3 border-t border-[#1c4575] text-center">
               <button
-                onClick={() => onFilterByTeam('')}
+                onClick={onViewAllTeams}
                 className="text-xs font-bold text-[#E0B543] hover:text-[#B4975A] inline-flex items-center space-x-1"
               >
-                <span>View all {sortedTeams.length} teams in games journal</span>
+                <span>View full leaderboard of all {sortedTeams.length} teams</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -269,6 +279,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     <div className="w-7 h-7 rounded-xl bg-[#16365C] text-[#E0B543] group-hover:bg-[#C69214] group-hover:text-[#0C2340] border border-[#1c4575] flex items-center justify-center font-black text-xs transition-colors shrink-0">
                       {idx + 1}
                     </div>
+                    <PlayerAvatar name={player.playerName} size={40} />
                     <div className="min-w-0">
                       <div className="font-bold text-white group-hover:text-[#E0B543] transition-colors truncate text-sm">
                         {player.playerName}
@@ -304,10 +315,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
           {sortedPlayers.length > 6 && (
             <div className="mt-4 pt-3 border-t border-[#1c4575] text-center">
               <button
-                onClick={() => onFilterByPlayer('')}
+                onClick={onViewAllPlayers}
                 className="text-xs font-bold text-[#E0B543] hover:text-[#B4975A] inline-flex items-center space-x-1"
               >
-                <span>Search all {sortedPlayers.length} players in games journal</span>
+                <span>View full leaderboard of all {sortedPlayers.length} players</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -318,49 +329,75 @@ export const Dashboard: React.FC<DashboardProps> = ({
       {/* Bottom Row: Top Scoring Performances & Venues */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* Top Scoring Single Game Performances */}
+        {/* Top Single Game Performances (tabbed by stat) */}
         <div className="lg:col-span-2 bg-[#0C2340]/90 border border-[#1c4575] rounded-3xl p-6 shadow-xl shadow-[#061324]/40">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center space-x-2">
-              <Zap className="w-5 h-5 text-[#E0B543]" />
-              <h3 className="text-xl font-black text-white tracking-tight">Top Scoring Performances Witnessed</h3>
+          <div className="flex flex-col gap-3 mb-5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Zap className="w-5 h-5 text-[#E0B543]" />
+                <h3 className="text-xl font-black text-white tracking-tight">Top Performances Witnessed</h3>
+              </div>
+              <span className="text-xs text-[#B4975A] font-semibold hidden sm:inline">Single game highs</span>
             </div>
-            <span className="text-xs text-[#B4975A] font-semibold">Single game highs</span>
+
+            {/* Stat tabs */}
+            <div className="flex flex-wrap items-center gap-1 bg-[#061324] p-1 rounded-xl border border-[#1c4575] text-xs">
+              {PERFORMANCE_STATS.map(s => (
+                <button
+                  key={s.key}
+                  onClick={() => setPerfStat(s.key)}
+                  className={`px-2.5 py-1 rounded-lg font-semibold transition-colors ${
+                    perfStat === s.key ? 'bg-[#C69214] text-[#0C2340]' : 'text-slate-300 hover:text-white'
+                  }`}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {summary.topScoringPerformances.slice(0, 6).map((perf, index) => (
+            {topPerformances.map((perf, index) => (
               <div
                 key={`${perf.playerName}-${perf.gameId}-${index}`}
                 onClick={() => {
                   const targetGame = games.find(g => g.id === perf.gameId);
                   if (targetGame) onSelectGame(targetGame);
                 }}
-                className="group p-4 bg-[#061324]/80 hover:bg-[#16365C] border border-[#1c4575]/80 hover:border-[#B4975A]/80 rounded-2xl cursor-pointer transition-all flex items-center justify-between"
+                className="group p-4 bg-[#061324]/80 hover:bg-[#16365C] border border-[#1c4575]/80 hover:border-[#B4975A]/80 rounded-2xl cursor-pointer transition-all flex items-center justify-between gap-3"
               >
-                <div className="min-w-0 pr-3">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-xs font-bold text-[#B4975A]">#{index + 1}</span>
-                    <span className="font-bold text-white group-hover:text-[#B4975A] transition-colors truncate">
-                      {perf.playerName}
+                <div className="flex items-center space-x-3 min-w-0">
+                  <div className="relative shrink-0">
+                    <PlayerAvatar name={perf.playerName} size={48} />
+                    <span className="absolute -top-1 -left-1 w-5 h-5 rounded-full bg-[#0C2340] border border-[#B4975A] text-[10px] font-black text-[#E0B543] flex items-center justify-center">
+                      {index + 1}
                     </span>
                   </div>
-                  <div className="text-xs text-slate-300 mt-1 truncate">
-                    {perf.teamName}
-                  </div>
-                  <div className="text-[11px] text-slate-400 mt-0.5 truncate">
-                    {perf.gameDate} • {perf.matchup}
+                  <div className="min-w-0">
+                    <div className="font-bold text-white group-hover:text-[#E0B543] transition-colors truncate">
+                      {perf.playerName}
+                    </div>
+                    <div className="flex items-center space-x-1.5 text-xs text-slate-300 mt-0.5 min-w-0">
+                      <TeamLogo name={perf.teamName} size={16} />
+                      <span className="truncate">{perf.teamName}</span>
+                    </div>
+                    <div className="text-[11px] text-slate-400 mt-0.5 truncate">
+                      {perf.gameDate} • {perf.detail}
+                    </div>
                   </div>
                 </div>
 
                 <div className="shrink-0 text-right">
-                  <div className="text-2xl font-black text-[#B4975A]">
-                    {perf.points}
+                  <div className="text-2xl font-black text-[#E0B543]">
+                    {perf.value}
                   </div>
-                  <div className="text-[10px] uppercase font-bold text-[#B4975A] tracking-wider">PTS</div>
+                  <div className="text-[10px] uppercase font-bold text-[#B4975A] tracking-wider">{perfMeta.short}</div>
                 </div>
               </div>
             ))}
+            {topPerformances.length === 0 && (
+              <p className="text-xs text-slate-400 italic sm:col-span-2">No {perfMeta.label.toLowerCase()} recorded yet.</p>
+            )}
           </div>
         </div>
 
