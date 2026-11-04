@@ -26,7 +26,7 @@ export const TeamLogo: React.FC<TeamLogoProps> = ({ name, size = 32, className =
     return (
       <div
         style={style}
-        className={`shrink-0 rounded-full bg-[#16365C] border border-[#1c4575] text-[#E0B543] flex items-center justify-center font-black ${className}`}
+        className={`shrink-0 rounded-full bg-[#1e2230] border border-[#2a2f42] text-[#b4bffd] flex items-center justify-center font-black ${className}`}
       >
         <span style={{ fontSize: Math.max(9, size * 0.34) }}>{initials(name)}</span>
       </div>
@@ -59,7 +59,7 @@ export const PlayerAvatar: React.FC<PlayerAvatarProps> = ({ name, size = 36, cla
   return (
     <div
       style={style}
-      className={`shrink-0 rounded-full bg-[#16365C] border border-[#1c4575] overflow-hidden flex items-center justify-center ${className}`}
+      className={`shrink-0 rounded-full bg-[#1e2230] border border-[#2a2f42] overflow-hidden flex items-center justify-center ${className}`}
     >
       {src && !failed ? (
         <img
@@ -70,7 +70,7 @@ export const PlayerAvatar: React.FC<PlayerAvatarProps> = ({ name, size = 36, cla
           className="w-full h-full object-cover object-top"
         />
       ) : (
-        <span className="font-black text-[#E0B543]" style={{ fontSize: Math.max(9, size * 0.34) }}>
+        <span className="font-black text-[#b4bffd]" style={{ fontSize: Math.max(9, size * 0.34) }}>
           {initials(name)}
         </span>
       )}

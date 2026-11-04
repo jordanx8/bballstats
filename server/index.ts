@@ -141,11 +141,11 @@ app.get('*', (_req: Request, res: Response) => {
   const indexHtml = path.join(distPath, 'index.html');
   res.sendFile(indexHtml, (err) => {
     if (err) {
-      res.status(200).send('CourtPass Backend API Running. Start Vite dev server for frontend in dev mode.');
+      res.status(200).send('BBallStats Backend API Running. Start Vite dev server for frontend in dev mode.');
     }
   });
 });
 
 app.listen(PORT, () => {
-  console.log(`🏀 CourtPass Server listening on http://localhost:${PORT}`);
+  console.log(`🏀 BBallStats Server listening on http://localhost:${PORT}`);
 });

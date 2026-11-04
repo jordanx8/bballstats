@@ -1,8 +1,15 @@
 import { Game, UserStatsSummary } from '../types';
 import { computeStatsSummaryClient } from './statsCalculator';
+import { canonicalVenue } from './venues';
 import defaultGames from '../../data/games.json';
 
 const API_BASE = '/api';
+
+/** Apply venue aliases in place (idempotent) so every view sees one name per arena. */
+function normalizeGame(game: Game): Game {
+  game.arena = canonicalVenue(game.arena);
+  return game;
+}
 
 export async function fetchGames(): Promise<Game[]> {
   // 1. Try local Express API if running in dev mode with server
@@ -10,14 +17,14 @@ export async function fetchGames(): Promise<Game[]> {
     const res = await fetch(`${API_BASE}/games`);
     if (res.ok) {
       const data = await res.json();
-      if (Array.isArray(data)) return data;
+      if (Array.isArray(data)) return data.map(normalizeGame);
     }
   } catch (_err) {
     // API server not present (e.g. static on GitHub Pages)
   }
 
   // 2. Direct bundled JSON data (Single Source of Truth from data/games.json)
-  return (defaultGames as unknown as Game[]) || [];
+  return ((defaultGames as unknown as Game[]) || []).map(normalizeGame);
 }
 
 export async function fetchGameById(id: string): Promise<Game> {
@@ -36,7 +43,7 @@ export async function updateGame(id: string, updates: { notes?: string; arena?: 
     });
     if (res.ok) {
       const data = await res.json();
-      return data.game;
+      return normalizeGame(data.game);
     }
   } catch (_err) {
     // Static mode

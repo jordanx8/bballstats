@@ -30,7 +30,7 @@ async function main() {
     process.exit(1);
   }
 
-  console.log(`\n🏀 [CourtPass Scraper CLI]`);
+  console.log(`\n🏀 [BBallStats Scraper CLI]`);
   console.log(`🔗 Scraping URL: ${url}`);
   if (notes) console.log(`📝 Notes: "${notes}"`);
 

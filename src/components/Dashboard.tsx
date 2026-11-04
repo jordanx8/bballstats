@@ -5,14 +5,13 @@ import {
   ArrowRight, ChevronRight, Zap
 } from 'lucide-react';
 import { PlayerAvatar, TeamLogo } from './Media';
+import { navigate, paths } from '../services/router';
 import { PERFORMANCE_STATS, PerformanceStatKey, computeTopPerformances } from '../services/leaderboards';
 
 interface DashboardProps {
   summary: UserStatsSummary | null;
   games: Game[];
   onSelectGame: (game: Game) => void;
-  onFilterByTeam: (teamName: string) => void;
-  onFilterByPlayer: (playerName: string) => void;
   onViewAllPlayers: () => void;
   onViewAllTeams: () => void;
 }
@@ -21,8 +20,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
   summary,
   games,
   onSelectGame,
-  onFilterByTeam,
-  onFilterByPlayer,
   onViewAllPlayers,
   onViewAllTeams,
 }) => {
@@ -35,12 +32,12 @@ export const Dashboard: React.FC<DashboardProps> = ({
   if (!summary || games.length === 0) {
     return (
       <div className="max-w-4xl mx-auto py-16 px-4 text-center">
-        <div className="w-20 h-20 bg-[#0C2340] border border-[#B4975A]/40 rounded-3xl mx-auto flex items-center justify-center mb-6 text-3xl shadow-xl shadow-[#C69214]/10">
+        <div className="w-20 h-20 bg-[#14161f] border border-[#6f7bdc]/40 rounded-3xl mx-auto flex items-center justify-center mb-6 text-3xl shadow-xl shadow-[#8b9bf5]/10">
           🏀
         </div>
         <h2 className="text-2xl font-black text-white mb-2">No Games Logged Yet</h2>
         <p className="text-slate-300/80 max-w-md mx-auto mb-6 text-sm leading-relaxed">
-          Log games you attend by triggering the <strong className="text-[#E0B543]">"Scrape Game &amp; Deploy"</strong> workflow in your repository's GitHub Actions tab.
+          Log games you attend by triggering the <strong className="text-[#b4bffd]">"Scrape Game &amp; Deploy"</strong> workflow in your repository's GitHub Actions tab.
         </p>
       </div>
     );
@@ -64,14 +61,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   return (
     <div className="space-y-8 pb-16">
-      {/* Top Banner / Key Metrics (Pelicans Navy & Gold Cards) */}
+      {/* Top Banner / Key Metrics (Night Mode Cards) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Games */}
-        <div className="bg-[#0C2340] border border-[#1c4575] rounded-2xl p-5 shadow-lg shadow-[#061324]/40 hover:border-[#B4975A]/60 transition-colors">
+        <div className="bg-[#14161f] border border-[#2a2f42] rounded-2xl p-5 shadow-lg shadow-[#0b0c12]/40 hover:border-[#6f7bdc]/60 transition-colors">
           <div className="flex items-center justify-between text-slate-300 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#B4975A]">Games Attended</span>
-            <div className="w-8 h-8 rounded-lg bg-[#061324] text-[#B4975A] border border-[#1c4575] flex items-center justify-center">
-              <Trophy className="w-4 h-4 text-[#B4975A]" />
+            <span className="text-xs font-bold uppercase tracking-wider text-[#6f7bdc]">Games Attended</span>
+            <div className="w-8 h-8 rounded-lg bg-[#0b0c12] text-[#6f7bdc] border border-[#2a2f42] flex items-center justify-center">
+              <Trophy className="w-4 h-4 text-[#6f7bdc]" />
             </div>
           </div>
           <div className="text-3xl font-black text-white tracking-tight">{summary.totalGames}</div>
@@ -81,25 +78,25 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         {/* Total Points Seen */}
-        <div className="bg-[#0C2340] border border-[#1c4575] rounded-2xl p-5 shadow-lg shadow-[#061324]/40 hover:border-[#B4975A]/60 transition-colors">
+        <div className="bg-[#14161f] border border-[#2a2f42] rounded-2xl p-5 shadow-lg shadow-[#0b0c12]/40 hover:border-[#6f7bdc]/60 transition-colors">
           <div className="flex items-center justify-between text-slate-300 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#B4975A]">Points Witnessed</span>
-            <div className="w-8 h-8 rounded-lg bg-[#061324] text-[#B4975A] border border-[#1c4575] flex items-center justify-center">
-              <Flame className="w-4 h-4 text-[#B4975A]" />
+            <span className="text-xs font-bold uppercase tracking-wider text-[#6f7bdc]">Points Witnessed</span>
+            <div className="w-8 h-8 rounded-lg bg-[#0b0c12] text-[#6f7bdc] border border-[#2a2f42] flex items-center justify-center">
+              <Flame className="w-4 h-4 text-[#6f7bdc]" />
             </div>
           </div>
           <div className="text-3xl font-black text-white tracking-tight">{summary.totalPointsSeen.toLocaleString()}</div>
-          <div className="mt-1 flex items-center text-xs text-[#B4975A] font-semibold">
+          <div className="mt-1 flex items-center text-xs text-[#6f7bdc] font-semibold">
             <span>Avg {summary.avgPointsPerGame} PPG per game</span>
           </div>
         </div>
 
         {/* Unique Teams Seen */}
-        <div className="bg-[#0C2340] border border-[#1c4575] rounded-2xl p-5 shadow-lg shadow-[#061324]/40 hover:border-[#B4975A]/60 transition-colors">
+        <div className="bg-[#14161f] border border-[#2a2f42] rounded-2xl p-5 shadow-lg shadow-[#0b0c12]/40 hover:border-[#6f7bdc]/60 transition-colors">
           <div className="flex items-center justify-between text-slate-300 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#B4975A]">Unique Teams</span>
-            <div className="w-8 h-8 rounded-lg bg-[#061324] text-[#B4975A] border border-[#1c4575] flex items-center justify-center">
-              <Shield className="w-4 h-4 text-[#B4975A]" />
+            <span className="text-xs font-bold uppercase tracking-wider text-[#6f7bdc]">Unique Teams</span>
+            <div className="w-8 h-8 rounded-lg bg-[#0b0c12] text-[#6f7bdc] border border-[#2a2f42] flex items-center justify-center">
+              <Shield className="w-4 h-4 text-[#6f7bdc]" />
             </div>
           </div>
           <div className="text-3xl font-black text-white tracking-tight">{summary.topTeamsSeen.length}</div>
@@ -109,11 +106,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         {/* Unique Players Seen */}
-        <div className="bg-[#0C2340] border border-[#1c4575] rounded-2xl p-5 shadow-lg shadow-[#061324]/40 hover:border-[#B4975A]/60 transition-colors">
+        <div className="bg-[#14161f] border border-[#2a2f42] rounded-2xl p-5 shadow-lg shadow-[#0b0c12]/40 hover:border-[#6f7bdc]/60 transition-colors">
           <div className="flex items-center justify-between text-slate-300 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#B4975A]">Unique Players</span>
-            <div className="w-8 h-8 rounded-lg bg-[#061324] text-[#B4975A] border border-[#1c4575] flex items-center justify-center">
-              <Users className="w-4 h-4 text-[#B4975A]" />
+            <span className="text-xs font-bold uppercase tracking-wider text-[#6f7bdc]">Unique Players</span>
+            <div className="w-8 h-8 rounded-lg bg-[#0b0c12] text-[#6f7bdc] border border-[#2a2f42] flex items-center justify-center">
+              <Users className="w-4 h-4 text-[#6f7bdc]" />
             </div>
           </div>
           <div className="text-3xl font-black text-white tracking-tight">{summary.topPlayersSeen.length}</div>
@@ -127,23 +124,23 @@ export const Dashboard: React.FC<DashboardProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
         {/* SECTION 1: TEAMS SEEN THE MOST */}
-        <div className="bg-[#0C2340]/90 border border-[#1c4575] rounded-3xl p-6 flex flex-col justify-between shadow-xl shadow-[#061324]/40">
+        <div className="bg-[#14161f]/90 border border-[#2a2f42] rounded-3xl p-6 flex flex-col justify-between shadow-xl shadow-[#0b0c12]/40">
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
               <div>
                 <div className="flex items-center space-x-2">
-                  <Shield className="w-5 h-5 text-[#E0B543]" />
+                  <Shield className="w-5 h-5 text-[#b4bffd]" />
                   <h3 className="text-xl font-black text-white tracking-tight">Teams You've Seen Most</h3>
                 </div>
                 <p className="text-xs text-slate-300/70 mt-0.5">Frequency, record, and scoring averages</p>
               </div>
 
               {/* Tabs */}
-              <div className="flex items-center space-x-1 bg-[#061324] p-1 rounded-xl border border-[#1c4575] text-xs">
+              <div className="flex items-center space-x-1 bg-[#0b0c12] p-1 rounded-xl border border-[#2a2f42] text-xs">
                 <button
                   onClick={() => setTeamTab('most_seen')}
                   className={`px-2.5 py-1 rounded-lg font-semibold transition-colors ${
-                    teamTab === 'most_seen' ? 'bg-[#C69214] text-[#0C2340]' : 'text-slate-300 hover:text-white'
+                    teamTab === 'most_seen' ? 'bg-[#8b9bf5] text-[#14161f]' : 'text-slate-300 hover:text-white'
                   }`}
                 >
                   Most Seen
@@ -151,7 +148,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 <button
                   onClick={() => setTeamTab('highest_winpct')}
                   className={`px-2.5 py-1 rounded-lg font-semibold transition-colors ${
-                    teamTab === 'highest_winpct' ? 'bg-[#C69214] text-[#0C2340]' : 'text-slate-300 hover:text-white'
+                    teamTab === 'highest_winpct' ? 'bg-[#8b9bf5] text-[#14161f]' : 'text-slate-300 hover:text-white'
                   }`}
                 >
                   Best Win%
@@ -159,7 +156,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 <button
                   onClick={() => setTeamTab('scoring')}
                   className={`px-2.5 py-1 rounded-lg font-semibold transition-colors ${
-                    teamTab === 'scoring' ? 'bg-[#C69214] text-[#0C2340]' : 'text-slate-300 hover:text-white'
+                    teamTab === 'scoring' ? 'bg-[#8b9bf5] text-[#14161f]' : 'text-slate-300 hover:text-white'
                   }`}
                 >
                   Top Scoring
@@ -174,16 +171,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 return (
                   <div
                     key={team.teamName}
-                    onClick={() => onFilterByTeam(team.teamName)}
-                    className="group flex items-center justify-between p-3.5 bg-[#061324]/80 hover:bg-[#16365C] border border-[#1c4575]/80 hover:border-[#B4975A]/80 rounded-2xl cursor-pointer transition-all"
+                    onClick={() => navigate(paths.team(team.teamName))}
+                    className="group flex items-center justify-between p-3.5 bg-[#0b0c12]/80 hover:bg-[#1e2230] border border-[#2a2f42]/80 hover:border-[#6f7bdc]/80 rounded-2xl cursor-pointer transition-all"
                   >
                     <div className="flex items-center space-x-3 min-w-0">
-                      <div className="w-7 h-7 rounded-xl bg-[#16365C] text-[#E0B543] group-hover:bg-[#C69214] group-hover:text-[#0C2340] border border-[#1c4575] flex items-center justify-center font-black text-xs transition-colors shrink-0">
+                      <div className="w-7 h-7 rounded-xl bg-[#1e2230] text-[#b4bffd] group-hover:bg-[#8b9bf5] group-hover:text-[#14161f] border border-[#2a2f42] flex items-center justify-center font-black text-xs transition-colors shrink-0">
                         {idx + 1}
                       </div>
                       <TeamLogo name={team.teamName} size={36} />
                       <div className="min-w-0">
-                        <div className="font-bold text-white group-hover:text-[#E0B543] transition-colors truncate text-sm">
+                        <div className="font-bold text-white group-hover:text-[#b4bffd] transition-colors truncate text-sm">
                           {team.teamName}
                         </div>
                         <div className="flex items-center space-x-2 text-xs text-slate-300/80">
@@ -201,11 +198,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
                         <div className="text-base font-extrabold text-white">
                           {team.gamesSeen} <span className="text-xs font-normal text-slate-400">game{team.gamesSeen === 1 ? '' : 's'}</span>
                         </div>
-                        <div className="text-[11px] text-[#B4975A]">
+                        <div className="text-[11px] text-[#6f7bdc]">
                           {team.asHomeCount}H / {team.asAwayCount}A
                         </div>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-[#E0B543] group-hover:translate-x-0.5 transition-all" />
+                      <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-[#b4bffd] group-hover:translate-x-0.5 transition-all" />
                     </div>
                   </div>
                 );
@@ -214,10 +211,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </div>
 
           {sortedTeams.length > 6 && (
-            <div className="mt-4 pt-3 border-t border-[#1c4575] text-center">
+            <div className="mt-4 pt-3 border-t border-[#2a2f42] text-center">
               <button
                 onClick={onViewAllTeams}
-                className="text-xs font-bold text-[#E0B543] hover:text-[#B4975A] inline-flex items-center space-x-1"
+                className="text-xs font-bold text-[#b4bffd] hover:text-[#6f7bdc] inline-flex items-center space-x-1"
               >
                 <span>View full leaderboard of all {sortedTeams.length} teams</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -227,23 +224,23 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         {/* SECTION 2: PLAYERS SEEN THE MOST */}
-        <div className="bg-[#0C2340]/90 border border-[#1c4575] rounded-3xl p-6 flex flex-col justify-between shadow-xl shadow-[#061324]/40">
+        <div className="bg-[#14161f]/90 border border-[#2a2f42] rounded-3xl p-6 flex flex-col justify-between shadow-xl shadow-[#0b0c12]/40">
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
               <div>
                 <div className="flex items-center space-x-2">
-                  <Users className="w-5 h-5 text-[#E0B543]" />
+                  <Users className="w-5 h-5 text-[#b4bffd]" />
                   <h3 className="text-xl font-black text-white tracking-tight">Players You've Seen Most</h3>
                 </div>
                 <p className="text-xs text-slate-300/70 mt-0.5">Top players witnessed live in action</p>
               </div>
 
               {/* Tabs */}
-              <div className="flex items-center space-x-1 bg-[#061324] p-1 rounded-xl border border-[#1c4575] text-xs">
+              <div className="flex items-center space-x-1 bg-[#0b0c12] p-1 rounded-xl border border-[#2a2f42] text-xs">
                 <button
                   onClick={() => setPlayerTab('most_seen')}
                   className={`px-2.5 py-1 rounded-lg font-semibold transition-colors ${
-                    playerTab === 'most_seen' ? 'bg-[#C69214] text-[#0C2340]' : 'text-slate-300 hover:text-white'
+                    playerTab === 'most_seen' ? 'bg-[#8b9bf5] text-[#14161f]' : 'text-slate-300 hover:text-white'
                   }`}
                 >
                   Most Seen
@@ -251,7 +248,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 <button
                   onClick={() => setPlayerTab('scoring')}
                   className={`px-2.5 py-1 rounded-lg font-semibold transition-colors ${
-                    playerTab === 'scoring' ? 'bg-[#C69214] text-[#0C2340]' : 'text-slate-300 hover:text-white'
+                    playerTab === 'scoring' ? 'bg-[#8b9bf5] text-[#14161f]' : 'text-slate-300 hover:text-white'
                   }`}
                 >
                   Points
@@ -259,7 +256,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 <button
                   onClick={() => setPlayerTab('playmaking')}
                   className={`px-2.5 py-1 rounded-lg font-semibold transition-colors ${
-                    playerTab === 'playmaking' ? 'bg-[#C69214] text-[#0C2340]' : 'text-slate-300 hover:text-white'
+                    playerTab === 'playmaking' ? 'bg-[#8b9bf5] text-[#14161f]' : 'text-slate-300 hover:text-white'
                   }`}
                 >
                   Assists
@@ -272,22 +269,22 @@ export const Dashboard: React.FC<DashboardProps> = ({
               {sortedPlayers.slice(0, 6).map((player, idx) => (
                 <div
                   key={player.playerName}
-                  onClick={() => onFilterByPlayer(player.playerName)}
-                  className="group flex items-center justify-between p-3.5 bg-[#061324]/80 hover:bg-[#16365C] border border-[#1c4575]/80 hover:border-[#B4975A]/80 rounded-2xl cursor-pointer transition-all"
+                  onClick={() => navigate(paths.player(player.playerName))}
+                  className="group flex items-center justify-between p-3.5 bg-[#0b0c12]/80 hover:bg-[#1e2230] border border-[#2a2f42]/80 hover:border-[#6f7bdc]/80 rounded-2xl cursor-pointer transition-all"
                 >
                   <div className="flex items-center space-x-3 min-w-0">
-                    <div className="w-7 h-7 rounded-xl bg-[#16365C] text-[#E0B543] group-hover:bg-[#C69214] group-hover:text-[#0C2340] border border-[#1c4575] flex items-center justify-center font-black text-xs transition-colors shrink-0">
+                    <div className="w-7 h-7 rounded-xl bg-[#1e2230] text-[#b4bffd] group-hover:bg-[#8b9bf5] group-hover:text-[#14161f] border border-[#2a2f42] flex items-center justify-center font-black text-xs transition-colors shrink-0">
                       {idx + 1}
                     </div>
                     <PlayerAvatar name={player.playerName} size={40} />
                     <div className="min-w-0">
-                      <div className="font-bold text-white group-hover:text-[#E0B543] transition-colors truncate text-sm">
+                      <div className="font-bold text-white group-hover:text-[#b4bffd] transition-colors truncate text-sm">
                         {player.playerName}
                       </div>
                       <div className="flex items-center space-x-2 text-xs text-slate-300/80 truncate">
                         <span className="text-slate-400">{player.teamsPlayedFor.join(', ')}</span>
                         <span>•</span>
-                        <span className="text-[#E0B543] font-semibold">{player.avgPts} PPG</span>
+                        <span className="text-[#b4bffd] font-semibold">{player.avgPts} PPG</span>
                         <span>•</span>
                         <span>{player.avgReb} RPG</span>
                         <span>•</span>
@@ -302,10 +299,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
                         {player.gamesSeen} <span className="text-xs font-normal text-slate-400">game{player.gamesSeen === 1 ? '' : 's'}</span>
                       </div>
                       <div className="text-[11px] text-slate-400">
-                        High: <span className="text-[#E0B543] font-bold">{player.highScore} pts</span>
+                        High: <span className="text-[#b4bffd] font-bold">{player.highScore} pts</span>
                       </div>
                     </div>
-                    <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-[#E0B543] group-hover:translate-x-0.5 transition-all" />
+                    <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-[#b4bffd] group-hover:translate-x-0.5 transition-all" />
                   </div>
                 </div>
               ))}
@@ -313,10 +310,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </div>
 
           {sortedPlayers.length > 6 && (
-            <div className="mt-4 pt-3 border-t border-[#1c4575] text-center">
+            <div className="mt-4 pt-3 border-t border-[#2a2f42] text-center">
               <button
                 onClick={onViewAllPlayers}
-                className="text-xs font-bold text-[#E0B543] hover:text-[#B4975A] inline-flex items-center space-x-1"
+                className="text-xs font-bold text-[#b4bffd] hover:text-[#6f7bdc] inline-flex items-center space-x-1"
               >
                 <span>View full leaderboard of all {sortedPlayers.length} players</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -330,24 +327,24 @@ export const Dashboard: React.FC<DashboardProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Top Single Game Performances (tabbed by stat) */}
-        <div className="lg:col-span-2 bg-[#0C2340]/90 border border-[#1c4575] rounded-3xl p-6 shadow-xl shadow-[#061324]/40">
+        <div className="lg:col-span-2 bg-[#14161f]/90 border border-[#2a2f42] rounded-3xl p-6 shadow-xl shadow-[#0b0c12]/40">
           <div className="flex flex-col gap-3 mb-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Zap className="w-5 h-5 text-[#E0B543]" />
+                <Zap className="w-5 h-5 text-[#b4bffd]" />
                 <h3 className="text-xl font-black text-white tracking-tight">Top Performances Witnessed</h3>
               </div>
-              <span className="text-xs text-[#B4975A] font-semibold hidden sm:inline">Single game highs</span>
+              <span className="text-xs text-[#6f7bdc] font-semibold hidden sm:inline">Single game highs</span>
             </div>
 
             {/* Stat tabs */}
-            <div className="flex flex-wrap items-center gap-1 bg-[#061324] p-1 rounded-xl border border-[#1c4575] text-xs">
+            <div className="flex flex-wrap items-center gap-1 bg-[#0b0c12] p-1 rounded-xl border border-[#2a2f42] text-xs">
               {PERFORMANCE_STATS.map(s => (
                 <button
                   key={s.key}
                   onClick={() => setPerfStat(s.key)}
                   className={`px-2.5 py-1 rounded-lg font-semibold transition-colors ${
-                    perfStat === s.key ? 'bg-[#C69214] text-[#0C2340]' : 'text-slate-300 hover:text-white'
+                    perfStat === s.key ? 'bg-[#8b9bf5] text-[#14161f]' : 'text-slate-300 hover:text-white'
                   }`}
                 >
                   {s.label}
@@ -364,17 +361,17 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   const targetGame = games.find(g => g.id === perf.gameId);
                   if (targetGame) onSelectGame(targetGame);
                 }}
-                className="group p-4 bg-[#061324]/80 hover:bg-[#16365C] border border-[#1c4575]/80 hover:border-[#B4975A]/80 rounded-2xl cursor-pointer transition-all flex items-center justify-between gap-3"
+                className="group p-4 bg-[#0b0c12]/80 hover:bg-[#1e2230] border border-[#2a2f42]/80 hover:border-[#6f7bdc]/80 rounded-2xl cursor-pointer transition-all flex items-center justify-between gap-3"
               >
                 <div className="flex items-center space-x-3 min-w-0">
                   <div className="relative shrink-0">
                     <PlayerAvatar name={perf.playerName} size={48} />
-                    <span className="absolute -top-1 -left-1 w-5 h-5 rounded-full bg-[#0C2340] border border-[#B4975A] text-[10px] font-black text-[#E0B543] flex items-center justify-center">
+                    <span className="absolute -top-1 -left-1 w-5 h-5 rounded-full bg-[#14161f] border border-[#6f7bdc] text-[10px] font-black text-[#b4bffd] flex items-center justify-center">
                       {index + 1}
                     </span>
                   </div>
                   <div className="min-w-0">
-                    <div className="font-bold text-white group-hover:text-[#E0B543] transition-colors truncate">
+                    <div className="font-bold text-white group-hover:text-[#b4bffd] transition-colors truncate">
                       {perf.playerName}
                     </div>
                     <div className="flex items-center space-x-1.5 text-xs text-slate-300 mt-0.5 min-w-0">
@@ -388,10 +385,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 </div>
 
                 <div className="shrink-0 text-right">
-                  <div className="text-2xl font-black text-[#E0B543]">
+                  <div className="text-2xl font-black text-[#b4bffd]">
                     {perf.value}
                   </div>
-                  <div className="text-[10px] uppercase font-bold text-[#B4975A] tracking-wider">{perfMeta.short}</div>
+                  <div className="text-[10px] uppercase font-bold text-[#6f7bdc] tracking-wider">{perfMeta.short}</div>
                 </div>
               </div>
             ))}
@@ -402,9 +399,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         {/* Venues Visited */}
-        <div className="bg-[#0C2340] border border-[#1c4575] rounded-3xl p-6 shadow-xl shadow-[#061324]/40">
+        <div className="bg-[#14161f] border border-[#2a2f42] rounded-3xl p-6 shadow-xl shadow-[#0b0c12]/40">
           <div className="flex items-center space-x-2 mb-6">
-            <MapPin className="w-5 h-5 text-[#B4975A]" />
+            <MapPin className="w-5 h-5 text-[#6f7bdc]" />
             <h3 className="text-xl font-black text-white tracking-tight">Venues &amp; Arenas</h3>
           </div>
 
@@ -412,14 +409,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
             {summary.venuesSeen.slice(0, 5).map((venue) => (
               <div
                 key={venue.arena}
-                className="p-3 bg-[#061324]/80 border border-[#1c4575]/80 rounded-2xl flex items-center justify-between"
+                className="p-3 bg-[#0b0c12]/80 border border-[#2a2f42]/80 rounded-2xl flex items-center justify-between"
               >
                 <div className="min-w-0 pr-2">
                   <div className="text-sm font-semibold text-slate-200 truncate">
                     {venue.arena}
                   </div>
                 </div>
-                <div className="shrink-0 px-2.5 py-1 bg-[#16365C] border border-[#1c4575] rounded-lg text-xs font-bold text-[#E0B543]">
+                <div className="shrink-0 px-2.5 py-1 bg-[#1e2230] border border-[#2a2f42] rounded-lg text-xs font-bold text-[#b4bffd]">
                   {venue.count} game{venue.count === 1 ? '' : 's'}
                 </div>
               </div>
@@ -430,16 +427,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </div>
 
           {/* League Distribution */}
-          <div className="mt-6 pt-5 border-t border-[#1c4575]">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[#B4975A] mb-3">Leagues Witnessed</h4>
+          <div className="mt-6 pt-5 border-t border-[#2a2f42]">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#6f7bdc] mb-3">Leagues Witnessed</h4>
             <div className="flex flex-wrap gap-2">
               {summary.leaguesSeen.map(l => (
                 <span
                   key={l.league}
-                  className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#061324] border border-[#1c4575] text-slate-200 flex items-center space-x-1.5"
+                  className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#0b0c12] border border-[#2a2f42] text-slate-200 flex items-center space-x-1.5"
                 >
                   <span>{l.league}:</span>
-                  <span className="text-[#E0B543] font-bold">{l.count}</span>
+                  <span className="text-[#b4bffd] font-bold">{l.count}</span>
                 </span>
               ))}
             </div>

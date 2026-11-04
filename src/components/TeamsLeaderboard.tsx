@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { ArrowDown, ArrowUp, ChevronRight, Search, Shield } from 'lucide-react';
 import { Game } from '../types';
 import { TeamLogo } from './Media';
+import { navigate, paths } from '../services/router';
 import { getGameSeason } from '../services/statsCalculator';
 import {
   LEAGUE_LABELS,
@@ -12,7 +13,6 @@ import {
 
 interface TeamsLeaderboardProps {
   games: Game[];
-  onViewTeamGames: (teamName: string) => void;
 }
 
 type SortKey =
@@ -22,9 +22,9 @@ type SortKey =
 const PAGE_SIZE = 50;
 
 const selectClass =
-  'bg-[#061324] border border-[#1c4575] focus:border-[#C69214] rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none font-medium';
+  'bg-[#0b0c12] border border-[#2a2f42] focus:border-[#8b9bf5] rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none font-medium';
 
-export const TeamsLeaderboard: React.FC<TeamsLeaderboardProps> = ({ games, onViewTeamGames }) => {
+export const TeamsLeaderboard: React.FC<TeamsLeaderboardProps> = ({ games }) => {
   const [search, setSearch] = useState('');
   const [league, setLeague] = useState<'all' | LeagueKey>('all');
   const [season, setSeason] = useState('all');
@@ -94,7 +94,7 @@ export const TeamsLeaderboard: React.FC<TeamsLeaderboardProps> = ({ games, onVie
     <div className="space-y-6 pb-20">
       <div>
         <div className="flex items-center space-x-2">
-          <Shield className="w-6 h-6 text-[#E0B543]" />
+          <Shield className="w-6 h-6 text-[#b4bffd]" />
           <h2 className="text-2xl font-black text-white tracking-tight">Teams Leaderboard</h2>
         </div>
         <p className="text-xs text-slate-300/80 mt-1">
@@ -103,15 +103,15 @@ export const TeamsLeaderboard: React.FC<TeamsLeaderboardProps> = ({ games, onVie
       </div>
 
       {/* Filters */}
-      <div className="bg-[#0C2340]/90 border border-[#1c4575] rounded-2xl p-4 space-y-3 shadow-lg shadow-[#061324]/40">
+      <div className="bg-[#14161f]/90 border border-[#2a2f42] rounded-2xl p-4 space-y-3 shadow-lg shadow-[#0b0c12]/40">
         <div className="relative">
-          <Search className="w-4 h-4 text-[#B4975A] absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-[#6f7bdc] absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Search teams..."
             value={search}
             onChange={e => { setSearch(e.target.value); resetPaging(); }}
-            className="w-full bg-[#061324] border border-[#1c4575] focus:border-[#C69214] rounded-xl pl-10 pr-16 py-2 text-sm text-slate-100 placeholder-slate-400 focus:outline-none transition-colors"
+            className="w-full bg-[#0b0c12] border border-[#2a2f42] focus:border-[#8b9bf5] rounded-xl pl-10 pr-16 py-2 text-sm text-slate-100 placeholder-slate-400 focus:outline-none transition-colors"
           />
           {search && (
             <button
@@ -146,11 +146,11 @@ export const TeamsLeaderboard: React.FC<TeamsLeaderboardProps> = ({ games, onVie
       </div>
 
       {/* Table */}
-      <div className="bg-[#0C2340] border border-[#1c4575] rounded-3xl overflow-hidden shadow-2xl shadow-[#061324]/50">
+      <div className="bg-[#14161f] border border-[#2a2f42] rounded-3xl overflow-hidden shadow-2xl shadow-[#0b0c12]/50">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-sm">
             <thead>
-              <tr className="border-b border-[#1c4575] bg-[#061324] text-[11px] uppercase tracking-wider text-[#B4975A] font-bold">
+              <tr className="border-b border-[#2a2f42] bg-[#0b0c12] text-[11px] uppercase tracking-wider text-[#6f7bdc] font-bold">
                 <th className="py-3.5 pl-5 pr-2 w-12">#</th>
                 <th className="py-3.5 px-3 min-w-[240px]">
                   <SortHeader label="Team" active={sortKey === 'teamName'} dir={sortDir} onClick={() => toggleSort('teamName')} align="left" />
@@ -163,9 +163,9 @@ export const TeamsLeaderboard: React.FC<TeamsLeaderboardProps> = ({ games, onVie
                 <th className="py-3.5 pr-4 w-8" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#1c4575]/50">
+            <tbody className="divide-y divide-[#2a2f42]/50">
               {shown.map((r, idx) => (
-                <TeamRow key={r.teamName} row={r} rank={idx + 1} onClick={() => onViewTeamGames(r.teamName)} />
+                <TeamRow key={r.teamName} row={r} rank={idx + 1} onClick={() => navigate(paths.team(r.teamName))} />
               ))}
             </tbody>
           </table>
@@ -180,7 +180,7 @@ export const TeamsLeaderboard: React.FC<TeamsLeaderboardProps> = ({ games, onVie
         )}
 
         {filtered.length > 0 && (
-          <div className="flex items-center justify-between px-5 py-3 border-t border-[#1c4575] bg-[#061324]/60 text-xs text-slate-300">
+          <div className="flex items-center justify-between px-5 py-3 border-t border-[#2a2f42] bg-[#0b0c12]/60 text-xs text-slate-300">
             <span>
               Showing <strong className="text-white">{shown.length}</strong> of{' '}
               <strong className="text-white">{filtered.length}</strong> teams
@@ -188,7 +188,7 @@ export const TeamsLeaderboard: React.FC<TeamsLeaderboardProps> = ({ games, onVie
             {shown.length < filtered.length && (
               <button
                 onClick={() => setVisible(v => v + PAGE_SIZE)}
-                className="px-3 py-1.5 bg-[#C69214] hover:bg-[#B4975A] text-[#0C2340] rounded-lg font-bold transition-colors"
+                className="px-3 py-1.5 bg-[#8b9bf5] hover:bg-[#6f7bdc] text-[#14161f] rounded-lg font-bold transition-colors"
               >
                 Show more
               </button>
@@ -208,13 +208,13 @@ const TeamRow: React.FC<{ row: TeamLeaderboardRow; rank: number; onClick: () => 
   const pct = Math.round(row.winPct * 100);
   const margin = row.margin;
   return (
-    <tr onClick={onClick} className="group hover:bg-[#16365C]/70 cursor-pointer transition-colors">
+    <tr onClick={onClick} className="group hover:bg-[#1e2230]/70 cursor-pointer transition-colors">
       <td className="py-3 pl-5 pr-2 text-xs font-bold text-slate-400">{rank}</td>
       <td className="py-3 px-3">
         <div className="flex items-center space-x-3">
           <TeamLogo name={row.teamName} size={40} />
           <div className="min-w-0">
-            <div className="font-bold text-white group-hover:text-[#E0B543] transition-colors truncate">{row.teamName}</div>
+            <div className="font-bold text-white group-hover:text-[#b4bffd] transition-colors truncate">{row.teamName}</div>
             <div className="text-[11px] text-slate-400">{LEAGUE_LABELS[row.league]}</div>
           </div>
         </div>
@@ -223,7 +223,7 @@ const TeamRow: React.FC<{ row: TeamLeaderboardRow; rank: number; onClick: () => 
       <td className="py-3 px-3 text-right font-mono text-emerald-400">{row.wins}</td>
       <td className="py-3 px-3 text-right font-mono text-[#E31837]">{row.losses}</td>
       <td className={`py-3 px-3 text-right font-mono font-bold ${pct >= 50 ? 'text-emerald-400' : 'text-[#E31837]'}`}>{pct}%</td>
-      <td className="py-3 px-3 text-right font-mono font-bold text-[#E0B543]">{row.ppg.toFixed(1)}</td>
+      <td className="py-3 px-3 text-right font-mono font-bold text-[#b4bffd]">{row.ppg.toFixed(1)}</td>
       <td className="py-3 px-3 text-right font-mono text-slate-200">{row.oppPpg.toFixed(1)}</td>
       <td className={`py-3 px-3 text-right font-mono ${margin > 0 ? 'text-emerald-400' : margin < 0 ? 'text-[#E31837]' : 'text-slate-300'}`}>
         {margin > 0 ? '+' : ''}{margin.toFixed(1)}
@@ -231,7 +231,7 @@ const TeamRow: React.FC<{ row: TeamLeaderboardRow; rank: number; onClick: () => 
       <td className="py-3 px-3 text-right font-mono text-slate-200">{row.home}</td>
       <td className="py-3 px-3 text-right font-mono text-slate-200">{row.away}</td>
       <td className="py-3 pr-4">
-        <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-[#E0B543] transition-colors" />
+        <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-[#b4bffd] transition-colors" />
       </td>
     </tr>
   );

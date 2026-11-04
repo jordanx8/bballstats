@@ -2372,7 +2372,7 @@
   {
     "id": "lsu-20261014UCF",
     "sourceUrl": "https://lsusports.net/boxscore/20986",
-    "sourceType": "college",
+    "sourceType": "cbb",
     "date": "2026-10-14",
     "formattedDate": "October 14, 2026",
     "arena": "Pete Maravich Assembly Center, Baton Rouge, Louisiana",
@@ -2722,7 +2722,7 @@
       }
     },
     "homeTeam": {
-      "name": "LSU Tigers",
+      "name": "LSU",
       "shortName": "LSU",
       "score": 85,
       "record": "0-0",
@@ -3344,7 +3344,7 @@
           "plusMinus": null
         },
         {
-          "name": "Michael Nwoko",
+          "name": "Mike Nwoko",
           "starter": false,
           "mp": "31",
           "fg": 2,
@@ -3829,7 +3829,7 @@
           "plusMinus": null
         },
         {
-          "name": "Michael Nwoko",
+          "name": "Mike Nwoko",
           "starter": true,
           "mp": "24",
           "fg": 1,
@@ -4362,7 +4362,7 @@
           "plusMinus": null
         },
         {
-          "name": "Michael Nwoko",
+          "name": "Mike Nwoko",
           "starter": true,
           "mp": "15",
           "fg": 3,
@@ -4895,7 +4895,7 @@
           "plusMinus": null
         },
         {
-          "name": "Michael Nwoko",
+          "name": "Mike Nwoko",
           "starter": true,
           "mp": "13",
           "fg": 2,
@@ -5203,7 +5203,7 @@
           "plusMinus": null
         },
         {
-          "name": "Mouhamed Dioubate",
+          "name": "Mo Dioubate",
           "starter": false,
           "mp": "12",
           "fg": 1,
@@ -5380,7 +5380,7 @@
           "plusMinus": null
         },
         {
-          "name": "Michael Nwoko",
+          "name": "Mike Nwoko",
           "starter": true,
           "mp": "20",
           "fg": 1,
@@ -5889,7 +5889,7 @@
           "plusMinus": null
         },
         {
-          "name": "Michael Nwoko",
+          "name": "Mike Nwoko",
           "starter": true,
           "mp": "23",
           "fg": 2,
@@ -6470,7 +6470,7 @@
           "plusMinus": null
         },
         {
-          "name": "Michael Nwoko",
+          "name": "Mike Nwoko",
           "starter": true,
           "mp": "26",
           "fg": 10,
@@ -7123,7 +7123,7 @@
           "plusMinus": null
         },
         {
-          "name": "Michael Nwoko",
+          "name": "Mike Nwoko",
           "starter": true,
           "mp": "23",
           "fg": 5,
@@ -7632,7 +7632,7 @@
           "plusMinus": null
         },
         {
-          "name": "Michael Nwoko",
+          "name": "Mike Nwoko",
           "starter": true,
           "mp": "24",
           "fg": 6,
@@ -8189,7 +8189,7 @@
           "plusMinus": null
         },
         {
-          "name": "Michael Nwoko",
+          "name": "Mike Nwoko",
           "starter": true,
           "mp": "14",
           "fg": 4,
@@ -9975,7 +9975,7 @@
           "plusMinus": null
         },
         {
-          "name": "Michael Nwoko",
+          "name": "Mike Nwoko",
           "starter": true,
           "mp": "20",
           "fg": 12,
@@ -10602,7 +10602,7 @@
           "plusMinus": null
         },
         {
-          "name": "Michael Nwoko",
+          "name": "Mike Nwoko",
           "starter": true,
           "mp": "17",
           "fg": 6,
@@ -11181,7 +11181,7 @@
           "plusMinus": null
         },
         {
-          "name": "Michael Nwoko",
+          "name": "Mike Nwoko",
           "starter": true,
           "mp": "20",
           "fg": 9,
@@ -11904,7 +11904,7 @@
           "plusMinus": null
         },
         {
-          "name": "Michael Nwoko",
+          "name": "Mike Nwoko",
           "starter": true,
           "mp": "18",
           "fg": 5,
@@ -12533,7 +12533,7 @@
           "plusMinus": null
         },
         {
-          "name": "Camryn Carter",
+          "name": "Cam Carter",
           "starter": true,
           "mp": "34",
           "fg": 2,
@@ -13018,7 +13018,7 @@
           "plusMinus": null
         },
         {
-          "name": "Camryn Carter",
+          "name": "Cam Carter",
           "starter": true,
           "mp": "35",
           "fg": 3,
@@ -13575,7 +13575,7 @@
           "plusMinus": null
         },
         {
-          "name": "Camryn Carter",
+          "name": "Cam Carter",
           "starter": true,
           "mp": "32",
           "fg": 7,
@@ -14156,7 +14156,7 @@
       ],
       "players": [
         {
-          "name": "Camryn Carter",
+          "name": "Cam Carter",
           "starter": true,
           "mp": "31",
           "fg": 2,
@@ -14761,7 +14761,7 @@
           "plusMinus": null
         },
         {
-          "name": "Camryn Carter",
+          "name": "Cam Carter",
           "starter": true,
           "mp": "31",
           "fg": 7,
@@ -15294,7 +15294,7 @@
       ],
       "players": [
         {
-          "name": "Camryn Carter",
+          "name": "Cam Carter",
           "starter": true,
           "mp": "36",
           "fg": 7,
@@ -15803,7 +15803,7 @@
       ],
       "players": [
         {
-          "name": "Camryn Carter",
+          "name": "Cam Carter",
           "starter": true,
           "mp": "37",
           "fg": 8,
@@ -16207,7 +16207,7 @@
           "plusMinus": null
         },
         {
-          "name": "Johnathan Pace",
+          "name": "Jonathan Pace",
           "starter": false,
           "mp": "19",
           "fg": 1,
@@ -16432,7 +16432,7 @@
           "plusMinus": null
         },
         {
-          "name": "Camryn Carter",
+          "name": "Cam Carter",
           "starter": true,
           "mp": "21",
           "fg": 9,
@@ -17061,7 +17061,7 @@
           "plusMinus": null
         },
         {
-          "name": "Camryn Carter",
+          "name": "Cam Carter",
           "starter": true,
           "mp": "27",
           "fg": 6,
@@ -17642,7 +17642,7 @@
       ],
       "players": [
         {
-          "name": "Camryn Carter",
+          "name": "Cam Carter",
           "starter": true,
           "mp": "36",
           "fg": 8,
@@ -18199,7 +18199,7 @@
           "plusMinus": null
         },
         {
-          "name": "Camryn Carter",
+          "name": "Cam Carter",
           "starter": true,
           "mp": "22",
           "fg": 4,
@@ -18708,7 +18708,7 @@
       ],
       "players": [
         {
-          "name": "Camryn Carter",
+          "name": "Cam Carter",
           "starter": true,
           "mp": "31",
           "fg": 7,
@@ -24428,7 +24428,7 @@
           "plusMinus": null
         },
         {
-          "name": "Mouhamed Dioubate",
+          "name": "Mo Dioubate",
           "starter": false,
           "mp": "8",
           "fg": 0,
@@ -30824,7 +30824,7 @@
       ],
       "players": [
         {
-          "name": "Camryn Carter",
+          "name": "Cam Carter",
           "starter": true,
           "mp": "39",
           "fg": 7,

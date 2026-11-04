@@ -31,7 +31,7 @@ function main() {
     process.exit(1);
   }
 
-  console.log(`\n🗑️ [CourtPass Delete Game CLI]`);
+  console.log(`\n🗑️ [BBallStats Delete Game CLI]`);
   console.log(`🔍 Searching for game matching: "${target}"...`);
 
   const games = loadGames();

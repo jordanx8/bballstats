@@ -1,8 +1,8 @@
-# 🏀 CourtPass — Attended Basketball Game & Boxscore Tracker
+# 🏀 BBallStats — Attended Basketball Game & Boxscore Tracker
 
-CourtPass is a Vite + React web application designed for basketball fans to log every game they attend in person, scrape full box scores from **Basketball Reference** (NBA/WNBA) and **Sports Reference** (NCAA Men's College Basketball), persist everything to a local `data/games.json` file, and view deep analytics on teams and players they've seen live.
+BBallStats is a Vite + React web application designed for basketball fans to log every game they attend in person, scrape full box scores from **Basketball Reference** (NBA/WNBA) and **Sports Reference** (NCAA Men's College Basketball), persist everything to a local `data/games.json` file, and view deep analytics on teams and players they've seen live.
 
-Styled in the official **New Orleans Pelicans color scheme** (Deep Navy `#0C2340`, Warm Gold `#B4975A`/`#C69214`, and Crimson Red `#C8102E`).
+Styled with a dark **night mode** theme (near-black surfaces `#0b0c12` / `#14161f` with an indigo accent `#8b9bf5`).
 
 All game additions and removals are managed cleanly via **GitHub Actions** (`workflow_dispatch`), which scrape, commit data updates, and automatically re-deploy the updated static site to **GitHub Pages**.
 
@@ -10,7 +10,7 @@ All game additions and removals are managed cleanly via **GitHub Actions** (`wor
 
 ## ✨ Features
 
-- **New Orleans Pelicans Theme**: Custom-styled UI with authentic Pelicans Navy, Metallic Gold, and Crimson Red colorways.
+- **Night Mode Theme**: Dark near-black UI with an indigo accent.
 - **Multi-Source Web Scraping**:
   - **Basketball Reference** (e.g. `https://www.basketball-reference.com/boxscores/202411110NOP.html`)
   - **Sports Reference CBB** (e.g. `https://www.sports-reference.com/cbb/boxscores/2024-11-06-20-louisiana-state.html`)
@@ -22,6 +22,10 @@ All game additions and removals are managed cleanly via **GitHub Actions** (`wor
   - **Venues & Arenas**: Track every arena visited.
 - **Players Leaderboard**: Every player you've seen, sortable by any stat, with search plus league / season / team / minimum-games filters and a totals vs. per-game toggle.
 - **Teams Leaderboard**: Every team you've seen with record, win %, PPG, opponent PPG, margin, and home/away split; searchable and filterable by league and season.
+- **Player & Team Pages**: Click any player or team (dashboard, leaderboards, box scores) for career totals, game logs, records, and per-opponent / per-season breakdowns.
+- **Seasons**: Season-by-season overview of games seen, record, and highlights, with a detail page per season.
+- **Shareable URLs**: Hash-based routing, e.g. `#/games/<id>`, `#/players/<name>`, `#/teams/<name>`, `#/seasons/<season>`.
+- **Venue Aliases**: Different spellings of the same arena are merged via [`src/services/venues.ts`](src/services/venues.ts); add a line to `VENUE_ALIASES` to merge or rename a venue.
 - **Chronological Games Journal**:
   - Search by player, team, arena, date, or personal note.
   - Filter by league (NBA, NCAA, WNBA) and sort by date, total points, or blowout margin.
@@ -114,14 +118,21 @@ The scrape and bulk-import workflows run `build-media` automatically and commit 
 │   │   ├── GameBoxscoreView.tsx# Full player box score view & scoreboard
 │   │   ├── PlayersLeaderboard.tsx # Full searchable/filterable player leaderboard
 │   │   ├── TeamsLeaderboard.tsx   # Full searchable/filterable team leaderboard
+│   │   ├── PlayerDetail.tsx    # Player page: totals, averages, game log
+│   │   ├── TeamDetail.tsx      # Team page: record, splits, game list
+│   │   ├── Seasons.tsx         # Seasons overview + per-season detail
+│   │   ├── ui.tsx              # Shared Link, BackButton, StatCard, Section helpers
 │   │   ├── Media.tsx           # TeamLogo / PlayerAvatar with initials fallback
-│   │   └── Navbar.tsx          # App navigation header in Pelicans theme
+│   │   └── Navbar.tsx          # App navigation header
 │   ├── services/
 │   │   ├── api.ts              # API client with static fallback
+│   │   ├── details.ts          # Player / team / season detail calculators
 │   │   ├── leaderboards.ts     # Per-stat performance, player & team leaderboard aggregation
 │   │   ├── media.ts            # Lookup helpers over data/media.json
 │   │   ├── mediaKeys.ts        # Name normalisation shared with scripts/build-media.ts
-│   │   └── statsCalculator.ts  # Client-side statistics aggregator for GitHub Pages
+│   │   ├── router.ts           # Hash router (useRoute, navigate, paths)
+│   │   ├── statsCalculator.ts  # Client-side statistics aggregator for GitHub Pages
+│   │   └── venues.ts           # Venue alias table + canonicalVenue()
 │   ├── types/
 │   │   └── index.ts            # TypeScript interfaces
 │   ├── App.tsx

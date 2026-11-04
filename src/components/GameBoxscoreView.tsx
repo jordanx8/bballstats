@@ -5,6 +5,8 @@ import {
   StickyNote, Check, Edit2
 } from 'lucide-react';
 import { PlayerAvatar, TeamLogo } from './Media';
+import { Link } from './ui';
+import { paths } from '../services/router';
 
 interface GameBoxscoreViewProps {
   game: Game;
@@ -14,20 +16,31 @@ interface GameBoxscoreViewProps {
 
 type TeamView = 'away' | 'home';
 
-interface Leader {
-  player: PlayerStats;
-  teamName: string;
-}
+type LeaderStat = 'pts' | 'trb' | 'ast' | 'stl' | 'blk';
 
-function findLeader(game: Game, stat: 'pts' | 'trb' | 'ast'): Leader | null {
-  let best: Leader | null = null;
-  for (const team of [game.awayTeam, game.homeTeam]) {
-    for (const player of team.players) {
-      if (player.dnpReason) continue;
-      if (!best || player[stat] > best.player[stat]) best = { player, teamName: team.name };
+const LEADER_STATS: { stat: LeaderStat; label: string; unit: string; color: string }[] = [
+  { stat: 'pts', label: 'Points', unit: 'PTS', color: 'text-[#b4bffd]' },
+  { stat: 'trb', label: 'Rebounds', unit: 'REB', color: 'text-sky-400' },
+  { stat: 'ast', label: 'Assists', unit: 'AST', color: 'text-emerald-400' },
+  { stat: 'stl', label: 'Steals', unit: 'STL', color: 'text-fuchsia-400' },
+  { stat: 'blk', label: 'Blocks', unit: 'BLK', color: 'text-orange-400' },
+];
+
+/** Players tied for the team lead in a stat (empty if nobody recorded any). */
+function teamLeaders(team: TeamGameData, stat: LeaderStat): PlayerStats[] {
+  let max = 0;
+  let tied: PlayerStats[] = [];
+  for (const player of team.players) {
+    if (player.dnpReason) continue;
+    const v = player[stat] || 0;
+    if (v > max) {
+      max = v;
+      tied = [player];
+    } else if (v === max && v > 0) {
+      tied.push(player);
     }
   }
-  return best;
+  return tied;
 }
 
 export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
@@ -55,12 +68,6 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
   const isAwayWinner = game.winner === 'away';
   const isHomeWinner = game.winner === 'home';
 
-  const leaders: { label: string; unit: string; color: string; leader: Leader | null; stat: 'pts' | 'trb' | 'ast' }[] = [
-    { label: 'Scoring Leader', unit: 'PTS', color: 'text-[#E0B543]', leader: findLeader(game, 'pts'), stat: 'pts' },
-    { label: 'Rebound Leader', unit: 'REB', color: 'text-sky-400', leader: findLeader(game, 'trb'), stat: 'trb' },
-    { label: 'Assist Leader', unit: 'AST', color: 'text-emerald-400', leader: findLeader(game, 'ast'), stat: 'ast' },
-  ];
-
   const lineLabel = (idx: number) => {
     const regulation = game.sourceType === 'cbb' ? 2 : 4;
     if (idx >= regulation) return `OT${idx - regulation + 1}`;
@@ -73,9 +80,9 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
       <div className="flex items-center justify-between gap-3">
         <button
           onClick={onBack}
-          className="inline-flex items-center space-x-2 px-4 py-2 bg-[#0C2340] hover:bg-[#16365C] border border-[#1c4575] hover:border-[#B4975A] text-slate-200 hover:text-white rounded-xl text-sm font-bold transition-all shadow-md"
+          className="inline-flex items-center space-x-2 px-4 py-2 bg-[#14161f] hover:bg-[#1e2230] border border-[#2a2f42] hover:border-[#6f7bdc] text-slate-200 hover:text-white rounded-xl text-sm font-bold transition-all shadow-md"
         >
-          <ArrowLeft className="w-4 h-4 text-[#B4975A]" />
+          <ArrowLeft className="w-4 h-4 text-[#6f7bdc]" />
           <span>Back</span>
         </button>
 
@@ -83,7 +90,7 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
           href={game.sourceUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center space-x-1.5 text-xs text-[#E0B543] hover:text-[#B4975A] bg-[#0C2340] hover:bg-[#16365C] border border-[#1c4575] px-3.5 py-2 rounded-xl transition-colors font-bold shadow-md"
+          className="inline-flex items-center space-x-1.5 text-xs text-[#b4bffd] hover:text-[#6f7bdc] bg-[#14161f] hover:bg-[#1e2230] border border-[#2a2f42] px-3.5 py-2 rounded-xl transition-colors font-bold shadow-md"
         >
           <span>View on {game.sourceType === 'cbb' ? 'Sports-Reference' : 'Basketball-Reference'}</span>
           <ExternalLink className="w-3.5 h-3.5" />
@@ -91,15 +98,15 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
       </div>
 
       {/* Scoreboard */}
-      <div className="bg-[#0C2340] border border-[#1c4575] rounded-3xl shadow-2xl shadow-[#061324]/80 overflow-hidden">
+      <div className="bg-[#14161f] border border-[#2a2f42] rounded-3xl shadow-2xl shadow-[#0b0c12]/80 overflow-hidden">
         {/* Meta strip */}
-        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-6 sm:px-8 py-4 bg-[#061324]/70 border-b border-[#1c4575]/80 text-xs text-slate-300">
+        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-6 sm:px-8 py-4 bg-[#0b0c12]/70 border-b border-[#2a2f42]/80 text-xs text-slate-300">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-            <span className="px-2.5 py-0.5 rounded text-[11px] font-black uppercase bg-[#061324] text-[#B4975A] border border-[#B4975A]/60 tracking-wider">
+            <span className="px-2.5 py-0.5 rounded text-[11px] font-black uppercase bg-[#0b0c12] text-[#6f7bdc] border border-[#6f7bdc]/60 tracking-wider">
               {game.sourceType === 'cbb' ? 'NCAA Basketball' : game.sourceType.toUpperCase()}
             </span>
             <span className="flex items-center space-x-1.5">
-              <Calendar className="w-3.5 h-3.5 text-[#B4975A]" />
+              <Calendar className="w-3.5 h-3.5 text-[#6f7bdc]" />
               <span className="text-white font-semibold">{game.formattedDate || game.date}</span>
             </span>
           </div>
@@ -107,13 +114,13 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
             {game.arena && (
               <span className="flex items-center space-x-1.5">
-                <MapPin className="w-3.5 h-3.5 text-[#B4975A]" />
+                <MapPin className="w-3.5 h-3.5 text-[#6f7bdc]" />
                 <span className="text-slate-200 font-medium">{game.arena}</span>
               </span>
             )}
             {game.attendance && (
               <span className="flex items-center space-x-1.5">
-                <Users className="w-3.5 h-3.5 text-[#B4975A]" />
+                <Users className="w-3.5 h-3.5 text-[#6f7bdc]" />
                 <span>Attendance {typeof game.attendance === 'number' ? game.attendance.toLocaleString() : game.attendance}</span>
               </span>
             )}
@@ -127,10 +134,10 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
           <div className="flex flex-col items-center">
             <div className="flex items-center gap-3 sm:gap-5 font-mono font-black">
               <span className={`text-4xl sm:text-6xl ${isAwayWinner ? 'text-white' : 'text-slate-500'}`}>{game.awayTeam.score}</span>
-              <span className="text-[#B4975A]/50 text-2xl sm:text-3xl font-light">–</span>
+              <span className="text-[#6f7bdc]/50 text-2xl sm:text-3xl font-light">–</span>
               <span className={`text-4xl sm:text-6xl ${isHomeWinner ? 'text-white' : 'text-slate-500'}`}>{game.homeTeam.score}</span>
             </div>
-            <div className="mt-2 text-[11px] font-bold uppercase tracking-widest text-[#B4975A]">
+            <div className="mt-2 text-[11px] font-bold uppercase tracking-widest text-[#6f7bdc]">
               Final{game.isOvertime ? ' · OT' : ''}
             </div>
           </div>
@@ -141,10 +148,10 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
         {/* Line score */}
         {(game.awayTeam.lineScores.length > 0 || game.homeTeam.lineScores.length > 0) && (
           <div className="px-4 sm:px-8 pb-6">
-            <div className="max-w-xl mx-auto overflow-x-auto rounded-2xl border border-[#1c4575]/80 bg-[#061324]/50">
+            <div className="max-w-xl mx-auto overflow-x-auto rounded-2xl border border-[#2a2f42]/80 bg-[#0b0c12]/50">
               <table className="w-full text-center text-sm">
                 <thead>
-                  <tr className="text-[11px] uppercase tracking-wider text-[#B4975A] font-bold border-b border-[#1c4575]/80">
+                  <tr className="text-[11px] uppercase tracking-wider text-[#6f7bdc] font-bold border-b border-[#2a2f42]/80">
                     <th className="py-2.5 px-4 text-left">Team</th>
                     {game.awayTeam.lineScores.map((_, idx) => (
                       <th key={idx} className="py-2.5 px-3">{lineLabel(idx)}</th>
@@ -152,7 +159,7 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
                     <th className="py-2.5 px-4 text-white">T</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#1c4575]/50">
+                <tbody className="divide-y divide-[#2a2f42]/50">
                   {[game.awayTeam, game.homeTeam].map(t => (
                     <tr key={t.name}>
                       <td className="py-2.5 px-4 text-left font-bold text-slate-200 whitespace-nowrap">
@@ -174,47 +181,64 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
         )}
       </div>
 
-      {/* Game Leaders */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {leaders.map(({ label, unit, color, leader, stat }) => (
-          <div
-            key={label}
-            className="bg-[#0C2340]/90 border border-[#1c4575] rounded-2xl p-4 flex items-center gap-4 shadow-lg"
-          >
-            {leader ? (
-              <>
-                <PlayerAvatar name={leader.player.name} size={56} />
-                <div className="min-w-0 flex-1">
-                  <div className="text-[11px] font-bold uppercase tracking-wider text-[#B4975A]">{label}</div>
-                  <div className="text-sm font-bold text-white truncate">{leader.player.name}</div>
-                  <div className="flex items-center space-x-1.5 text-xs text-slate-400 mt-0.5">
-                    <TeamLogo name={leader.teamName} size={14} />
-                    <span className="truncate">{leader.teamName}</span>
-                  </div>
-                </div>
-                <div className={`text-3xl font-black font-mono tabular-nums ${color}`}>
-                  {leader.player[stat]}
-                  <span className="block text-[10px] font-bold text-slate-400 text-right tracking-wider">{unit}</span>
-                </div>
-              </>
-            ) : (
-              <span className="text-xs text-slate-400">No data</span>
-            )}
+      {/* Game Leaders — one card per team */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {[game.awayTeam, game.homeTeam].map((team) => (
+          <div key={team.name} className="bg-[#14161f]/90 border border-[#2a2f42] rounded-2xl shadow-lg overflow-hidden">
+            <div className="flex items-center space-x-2.5 px-4 py-3 bg-[#0b0c12]/60 border-b border-[#2a2f42]">
+              <TeamLogo name={team.name} size={24} />
+              <Link to={paths.team(team.name)} className="text-sm font-bold text-white hover:text-[#b4bffd] truncate transition-colors">
+                {team.name}
+              </Link>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#6f7bdc] ml-auto">Team Leaders</span>
+            </div>
+            <ul className="divide-y divide-[#2a2f42]/60">
+              {LEADER_STATS.map(({ stat, label, unit, color }) => {
+                const tied = teamLeaders(team, stat);
+                const first = tied[0];
+                return (
+                  <li key={stat} className="flex items-center gap-3 px-4 py-2.5">
+                    <div className="w-16 shrink-0 text-[11px] font-bold uppercase tracking-wider text-slate-400">{label}</div>
+                    {first ? (
+                      <>
+                        <PlayerAvatar name={first.name} size={36} />
+                        <div className="min-w-0 flex-1" title={tied.map((p) => p.name).join(', ')}>
+                          <Link to={paths.player(first.name)} className="block text-sm font-bold text-white hover:text-[#b4bffd] truncate transition-colors">
+                            {first.name}
+                          </Link>
+                          {tied.length > 1 && (
+                            <div className="text-[11px] text-slate-400 truncate">
+                              +{tied.length - 1} tied: {tied.slice(1).map((p) => p.name).join(', ')}
+                            </div>
+                          )}
+                        </div>
+                        <div className={`text-2xl font-black font-mono tabular-nums ${color}`}>
+                          {first[stat]}
+                          <span className="ml-1 text-[10px] font-bold text-slate-400 tracking-wider">{unit}</span>
+                        </div>
+                      </>
+                    ) : (
+                      <span className="text-xs text-slate-500">—</span>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         ))}
       </div>
 
       {/* Personal Notes Section */}
-      <div className="bg-[#0C2340]/90 border border-[#1c4575] rounded-3xl p-6 shadow-xl">
+      <div className="bg-[#14161f]/90 border border-[#2a2f42] rounded-3xl p-6 shadow-xl">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2">
-            <StickyNote className="w-4 h-4 text-[#E0B543]" />
+            <StickyNote className="w-4 h-4 text-[#b4bffd]" />
             <h3 className="text-sm font-bold text-white uppercase tracking-wider">Your Personal Memory &amp; Notes</h3>
           </div>
           {!isEditingNotes && (
             <button
               onClick={() => setIsEditingNotes(true)}
-              className="text-xs text-[#E0B543] hover:text-[#B4975A] font-bold flex items-center space-x-1"
+              className="text-xs text-[#b4bffd] hover:text-[#6f7bdc] font-bold flex items-center space-x-1"
             >
               <Edit2 className="w-3.5 h-3.5" />
               <span>{game.notes ? 'Edit Note' : 'Add Note'}</span>
@@ -228,7 +252,7 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
               value={notesText}
               onChange={(e) => setNotesText(e.target.value)}
               placeholder="e.g. Sat 5 rows from court with friends, awesome game-winner in overtime!"
-              className="w-full bg-[#061324] border border-[#1c4575] rounded-2xl p-3.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-[#C69214] min-h-[90px]"
+              className="w-full bg-[#0b0c12] border border-[#2a2f42] rounded-2xl p-3.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-[#8b9bf5] min-h-[90px]"
             />
             <div className="flex items-center space-x-2 justify-end">
               <button
@@ -243,7 +267,7 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
               <button
                 onClick={handleSaveNotes}
                 disabled={isSavingNotes}
-                className="px-4 py-1.5 rounded-xl text-xs font-bold bg-[#C69214] hover:bg-[#B4975A] text-[#0C2340] flex items-center space-x-1.5 shadow-md shadow-[#C69214]/20"
+                className="px-4 py-1.5 rounded-xl text-xs font-bold bg-[#8b9bf5] hover:bg-[#6f7bdc] text-[#14161f] flex items-center space-x-1.5 shadow-md shadow-[#8b9bf5]/20"
               >
                 <Check className="w-3.5 h-3.5" />
                 <span>{isSavingNotes ? 'Saving...' : 'Save Notes'}</span>
@@ -251,7 +275,7 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
             </div>
           </div>
         ) : (
-          <p className="text-sm text-slate-200 bg-[#061324]/80 p-3.5 rounded-2xl border border-[#1c4575]/80">
+          <p className="text-sm text-slate-200 bg-[#0b0c12]/80 p-3.5 rounded-2xl border border-[#2a2f42]/80">
             {game.notes || <span className="text-slate-400 italic">No notes logged for this game yet. Click "Add Note" to record your memories!</span>}
           </p>
         )}
@@ -259,7 +283,7 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
 
       {/* Team switcher + Box score */}
       <div className="space-y-4">
-        <div className="grid grid-cols-2 gap-2 bg-[#061324] p-1.5 rounded-2xl border border-[#1c4575] max-w-xl">
+        <div className="grid grid-cols-2 gap-2 bg-[#0b0c12] p-1.5 rounded-2xl border border-[#2a2f42] max-w-xl">
           {([
             { key: 'away' as const, team: game.awayTeam, winner: isAwayWinner },
             { key: 'home' as const, team: game.homeTeam, winner: isHomeWinner },
@@ -269,13 +293,13 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
               onClick={() => setTeamView(key)}
               className={`flex items-center justify-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-bold transition-all min-w-0 ${
                 teamView === key
-                  ? 'bg-[#B4975A] text-[#0C2340] shadow-sm'
-                  : 'text-slate-300 hover:text-white hover:bg-[#16365C]/60'
+                  ? 'bg-[#6f7bdc] text-[#14161f] shadow-sm'
+                  : 'text-slate-300 hover:text-white hover:bg-[#1e2230]/60'
               }`}
             >
               <TeamLogo name={team.name} size={24} />
               <span className="truncate">{team.shortName || team.name}</span>
-              <span className={`font-mono text-xs ${teamView === key ? 'text-[#0C2340]' : winner ? 'text-emerald-400' : 'text-slate-400'}`}>
+              <span className={`font-mono text-xs ${teamView === key ? 'text-[#14161f]' : winner ? 'text-emerald-400' : 'text-slate-400'}`}>
                 {team.score}
               </span>
             </button>
@@ -305,13 +329,15 @@ const ScoreTeam: React.FC<{
       align === 'right' ? 'md:flex-row-reverse md:text-right' : 'md:flex-row md:text-left'
     }`}
   >
-    <TeamLogo name={team.name} size={72} />
+    <Link to={paths.team(team.name)} title={`${team.name} — team page`}>
+      <TeamLogo name={team.name} size={72} />
+    </Link>
     <div className="min-w-0">
-      <div className="text-[11px] uppercase tracking-widest text-[#B4975A] font-bold">
+      <div className="text-[11px] uppercase tracking-widest text-[#6f7bdc] font-bold">
         {label}{team.record ? ` · ${team.record}` : ''}
       </div>
       <h2 className={`text-lg sm:text-2xl font-black leading-tight break-words ${isWinner ? 'text-white' : 'text-slate-400'}`}>
-        {team.name}
+        <Link to={paths.team(team.name)} className="hover:text-[#b4bffd] transition-colors">{team.name}</Link>
       </h2>
       {isWinner && (
         <span className="inline-block mt-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 tracking-wider">
@@ -344,9 +370,9 @@ const TeamBoxscoreTable: React.FC<{ team: TeamGameData; label: string; isWinner:
   const head = 'py-3 px-3 text-center whitespace-nowrap';
 
   return (
-    <div className="bg-[#0C2340]/90 border border-[#1c4575] rounded-3xl overflow-hidden shadow-xl shadow-[#061324]/50">
+    <div className="bg-[#14161f]/90 border border-[#2a2f42] rounded-3xl overflow-hidden shadow-xl shadow-[#0b0c12]/50">
       {/* Header */}
-      <div className="px-5 py-4 bg-[#061324]/90 border-b border-[#1c4575] flex flex-wrap items-center justify-between gap-4">
+      <div className="px-5 py-4 bg-[#0b0c12]/90 border-b border-[#2a2f42] flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center space-x-3">
           <TeamLogo name={team.name} size={40} />
           <div>
@@ -358,7 +384,7 @@ const TeamBoxscoreTable: React.FC<{ team: TeamGameData; label: string; isWinner:
                 </span>
               )}
             </h3>
-            <span className="text-xs text-[#B4975A] font-medium">{label}</span>
+            <span className="text-xs text-[#6f7bdc] font-medium">{label}</span>
           </div>
         </div>
 
@@ -378,34 +404,34 @@ const TeamBoxscoreTable: React.FC<{ team: TeamGameData; label: string; isWinner:
         <table className="w-full min-w-[1100px] text-left border-collapse text-sm tabular-nums">
           <thead>
             {/* Group header */}
-            <tr className="bg-[#061324]/80 text-[10px] uppercase tracking-widest text-slate-400 font-bold">
+            <tr className="bg-[#0b0c12]/80 text-[10px] uppercase tracking-widest text-slate-400 font-bold">
               {COLUMN_GROUPS.map((g, i) => (
                 <th
                   key={i}
                   colSpan={g.span}
                   className={`py-1.5 px-3 text-center ${
-                    i === 0 ? 'sticky left-0 z-10 bg-[#061324]' : i === 1 ? '' : 'border-l border-[#1c4575]/60'
+                    i === 0 ? 'sticky left-0 z-10 bg-[#0b0c12]' : i === 1 ? '' : 'border-l border-[#2a2f42]/60'
                   }`}
                 >
                   {g.label}
                 </th>
               ))}
             </tr>
-            <tr className="border-b border-[#1c4575] bg-[#061324] text-[11px] uppercase font-bold text-[#B4975A] tracking-wider">
-              <th className="py-3 pl-5 pr-3 min-w-[230px] sticky left-0 z-10 bg-[#061324]">Player</th>
+            <tr className="border-b border-[#2a2f42] bg-[#0b0c12] text-[11px] uppercase font-bold text-[#6f7bdc] tracking-wider">
+              <th className="py-3 pl-5 pr-3 min-w-[230px] sticky left-0 z-10 bg-[#0b0c12]">Player</th>
               <th className={head}>MIN</th>
-              <th className={`${head} border-l border-[#1c4575]/60 text-white`}>PTS</th>
+              <th className={`${head} border-l border-[#2a2f42]/60 text-white`}>PTS</th>
               <th className={head}>REB</th>
               <th className={head}>AST</th>
               <th className={head}>STL</th>
               <th className={head}>BLK</th>
-              <th className={`${head} border-l border-[#1c4575]/60`}>FG</th>
+              <th className={`${head} border-l border-[#2a2f42]/60`}>FG</th>
               <th className={`${head} text-slate-400`}>FG%</th>
               <th className={head}>3P</th>
               <th className={`${head} text-slate-400`}>3P%</th>
               <th className={head}>FT</th>
               <th className={`${head} text-slate-400`}>FT%</th>
-              <th className={`${head} border-l border-[#1c4575]/60`}>TO</th>
+              <th className={`${head} border-l border-[#2a2f42]/60`}>TO</th>
               <th className={head}>PF</th>
               <th className={head}>+/-</th>
             </tr>
@@ -425,8 +451,8 @@ const TeamBoxscoreTable: React.FC<{ team: TeamGameData; label: string; isWinner:
               <>
                 <SectionRow label="Did Not Play" colSpan={colCount} />
                 {dnp.map((p, idx) => (
-                  <tr key={p.name + idx} className="border-b border-[#1c4575]/30 text-slate-400">
-                    <td className="py-2.5 pl-5 pr-3 sticky left-0 z-[1] bg-[#0C2340]">
+                  <tr key={p.name + idx} className="border-b border-[#2a2f42]/30 text-slate-400">
+                    <td className="py-2.5 pl-5 pr-3 sticky left-0 z-[1] bg-[#14161f]">
                       <div className="flex items-center space-x-3">
                         <PlayerAvatar name={p.name} size={32} className="opacity-60" />
                         <span className="font-medium text-slate-300">{p.name}</span>
@@ -441,21 +467,21 @@ const TeamBoxscoreTable: React.FC<{ team: TeamGameData; label: string; isWinner:
 
           {team.totals && (
             <tfoot>
-              <tr className="border-t-2 border-[#1c4575] bg-[#061324] font-bold text-slate-100">
-                <td className="py-3.5 pl-5 pr-3 font-black uppercase text-[#B4975A] sticky left-0 z-[1] bg-[#061324]">Team Totals</td>
+              <tr className="border-t-2 border-[#2a2f42] bg-[#0b0c12] font-bold text-slate-100">
+                <td className="py-3.5 pl-5 pr-3 font-black uppercase text-[#6f7bdc] sticky left-0 z-[1] bg-[#0b0c12]">Team Totals</td>
                 <td className="py-3.5 px-3 text-center font-mono">{team.totals.mp || ''}</td>
-                <td className="py-3.5 px-3 text-center font-mono text-base font-black text-[#E0B543] border-l border-[#1c4575]/60">{team.totals.pts}</td>
+                <td className="py-3.5 px-3 text-center font-mono text-base font-black text-[#b4bffd] border-l border-[#2a2f42]/60">{team.totals.pts}</td>
                 <td className="py-3.5 px-3 text-center font-mono">{team.totals.trb}</td>
                 <td className="py-3.5 px-3 text-center font-mono">{team.totals.ast}</td>
                 <td className="py-3.5 px-3 text-center font-mono">{team.totals.stl}</td>
                 <td className="py-3.5 px-3 text-center font-mono">{team.totals.blk}</td>
-                <td className="py-3.5 px-3 text-center font-mono border-l border-[#1c4575]/60">{team.totals.fg}-{team.totals.fga}</td>
+                <td className="py-3.5 px-3 text-center font-mono border-l border-[#2a2f42]/60">{team.totals.fg}-{team.totals.fga}</td>
                 <td className="py-3.5 px-3 text-center font-mono text-slate-300">{formatPct(team.totals.fgPct)}</td>
                 <td className="py-3.5 px-3 text-center font-mono">{team.totals.fg3}-{team.totals.fg3a}</td>
                 <td className="py-3.5 px-3 text-center font-mono text-slate-300">{formatPct(team.totals.fg3Pct)}</td>
                 <td className="py-3.5 px-3 text-center font-mono">{team.totals.ft}-{team.totals.fta}</td>
                 <td className="py-3.5 px-3 text-center font-mono text-slate-300">{formatPct(team.totals.ftPct)}</td>
-                <td className="py-3.5 px-3 text-center font-mono border-l border-[#1c4575]/60">{team.totals.tov}</td>
+                <td className="py-3.5 px-3 text-center font-mono border-l border-[#2a2f42]/60">{team.totals.tov}</td>
                 <td className="py-3.5 px-3 text-center font-mono">{team.totals.pf}</td>
                 <td className="py-3.5 px-3 text-center text-slate-500">–</td>
               </tr>
@@ -468,16 +494,16 @@ const TeamBoxscoreTable: React.FC<{ team: TeamGameData; label: string; isWinner:
 };
 
 const Chip: React.FC<{ label: string; value: string; sub?: string }> = ({ label, value, sub }) => (
-  <div className="px-2.5 py-1.5 rounded-lg bg-[#0C2340] border border-[#1c4575] font-mono">
-    <span className="text-[10px] font-sans font-bold text-[#B4975A] mr-1.5">{label}</span>
+  <div className="px-2.5 py-1.5 rounded-lg bg-[#14161f] border border-[#2a2f42] font-mono">
+    <span className="text-[10px] font-sans font-bold text-[#6f7bdc] mr-1.5">{label}</span>
     <strong className="text-white">{value}</strong>
     {sub && <span className="text-slate-400 ml-1.5">{sub}</span>}
   </div>
 );
 
 const SectionRow: React.FC<{ label: string; colSpan: number }> = ({ label, colSpan }) => (
-  <tr className="bg-[#061324]/60 border-y border-[#1c4575]/60">
-    <td colSpan={colSpan} className="py-2 pl-5 pr-3 text-[10px] font-bold uppercase tracking-widest text-[#B4975A] sticky left-0">
+  <tr className="bg-[#0b0c12]/60 border-y border-[#2a2f42]/60">
+    <td colSpan={colSpan} className="py-2 pl-5 pr-3 text-[10px] font-bold uppercase tracking-widest text-[#6f7bdc] sticky left-0">
       {label}
     </td>
   </tr>
@@ -487,26 +513,28 @@ const PlayerRow: React.FC<{ player: PlayerStats }> = ({ player }) => {
   const cell = 'py-3 px-3 text-center font-mono';
   const pm = player.plusMinus;
   return (
-    <tr className="group border-b border-[#1c4575]/30 hover:bg-[#16365C]/50 transition-colors">
-      <td className="py-2.5 pl-5 pr-3 sticky left-0 z-[1] bg-[#0C2340] group-hover:bg-[#16365C] transition-colors">
+    <tr className="group border-b border-[#2a2f42]/30 hover:bg-[#1e2230]/50 transition-colors">
+      <td className="py-2.5 pl-5 pr-3 sticky left-0 z-[1] bg-[#14161f] group-hover:bg-[#1e2230] transition-colors">
         <div className="flex items-center space-x-3">
           <PlayerAvatar name={player.name} size={36} />
-          <span className="font-semibold text-slate-100 whitespace-nowrap">{player.name}</span>
+          <Link to={paths.player(player.name)} className="font-semibold text-slate-100 hover:text-[#b4bffd] whitespace-nowrap transition-colors">
+            {player.name}
+          </Link>
         </div>
       </td>
       <td className={`${cell} text-slate-300`}>{player.mp || '–'}</td>
-      <td className={`${cell} border-l border-[#1c4575]/40 font-black text-[#E0B543] text-base`}>{player.pts}</td>
+      <td className={`${cell} border-l border-[#2a2f42]/40 font-black text-[#b4bffd] text-base`}>{player.pts}</td>
       <td className={`${cell} text-slate-100`}>{player.trb}</td>
       <td className={`${cell} text-slate-100`}>{player.ast}</td>
       <td className={`${cell} text-slate-100`}>{player.stl}</td>
       <td className={`${cell} text-slate-100`}>{player.blk}</td>
-      <td className={`${cell} border-l border-[#1c4575]/40 text-slate-200`}>{player.fg}-{player.fga}</td>
+      <td className={`${cell} border-l border-[#2a2f42]/40 text-slate-200`}>{player.fg}-{player.fga}</td>
       <td className={`${cell} text-slate-400 text-xs`}>{formatPct(player.fgPct)}</td>
       <td className={`${cell} text-slate-200`}>{player.fg3}-{player.fg3a}</td>
       <td className={`${cell} text-slate-400 text-xs`}>{formatPct(player.fg3Pct)}</td>
       <td className={`${cell} text-slate-200`}>{player.ft}-{player.fta}</td>
       <td className={`${cell} text-slate-400 text-xs`}>{formatPct(player.ftPct)}</td>
-      <td className={`${cell} border-l border-[#1c4575]/40 text-slate-300`}>{player.tov}</td>
+      <td className={`${cell} border-l border-[#2a2f42]/40 text-slate-300`}>{player.tov}</td>
       <td className={`${cell} text-slate-300`}>{player.pf}</td>
       <td className={cell}>
         {pm !== null && pm !== undefined ? (

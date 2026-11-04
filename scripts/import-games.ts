@@ -103,7 +103,7 @@ async function main() {
     process.exit(1);
   }
 
-  console.log(`\n🏀 [CourtPass Bulk Import CLI]`);
+  console.log(`\n🏀 [BBallStats Bulk Import CLI]`);
   console.log(`📋 Found ${items.length} URL${items.length === 1 ? '' : 's'} to process with ${delayMs}ms interval...\n`);
 
   let successCount = 0;

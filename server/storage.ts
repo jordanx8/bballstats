@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { Game, UserStatsSummary, AggregatedPlayerStat, AggregatedTeamStat } from '../src/types/index.js';
+import { canonicalVenue } from '../src/services/venues.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -155,7 +156,8 @@ export function computeStatsSummary(games: Game[]): UserStatsSummary {
 
     // Venue
     if (game.arena) {
-      venueMap.set(game.arena, (venueMap.get(game.arena) || 0) + 1);
+      const arena = canonicalVenue(game.arena)!;
+      venueMap.set(arena, (venueMap.get(arena) || 0) + 1);
     }
 
     // League

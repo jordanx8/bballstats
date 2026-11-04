@@ -8,22 +8,22 @@
   }
 }
 
-/* Custom scrollbars in Pelicans theme */
+/* Custom scrollbars in Night Mode */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #061324;
+  background: #0b0c12;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #16365C;
+  background: #1e2230;
   border-radius: 4px;
-  border: 1px solid #1c4575;
+  border: 1px solid #2a2f42;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #B4975A;
+  background: #6f7bdc;
 }
