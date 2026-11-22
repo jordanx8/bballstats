@@ -76,8 +76,8 @@ function getScoreboard(sport: Sport, yyyymmdd: string): Promise<any[]> {
 function sportsToTry(game: Game): Sport[] {
   if (game.sourceType === 'nba') return ['nba'];
   if (game.sourceType === 'wnba') return ['wnba'];
-  const isWomens = /women/i.test(`${game.homeTeam.name} ${game.awayTeam.name}`) || /_w$/.test(game.id);
-  return isWomens ? ['womens'] : ['mens', 'womens'];
+  if (game.sourceType === 'wcbb') return ['womens'];
+  return ['mens', 'womens'];
 }
 
 function shiftDate(isoDate: string, days: number): string {

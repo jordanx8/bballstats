@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Game } from '../types';
 import { Search, Calendar, MapPin, Award, StickyNote, Trophy } from 'lucide-react';
 import { getGameSeason } from '../services/statsCalculator';
+import { LEAGUE_LABELS, leagueOf } from '../services/leaderboards';
 
 interface GamesTableProps {
   games: Game[];
@@ -159,7 +160,8 @@ export const GamesTable: React.FC<GamesTableProps> = ({
           >
             <option value="all">All Leagues</option>
             <option value="nba">NBA</option>
-            <option value="cbb">NCAA (CBB)</option>
+            <option value="cbb">NCAA Men</option>
+            <option value="wcbb">NCAA Women</option>
             <option value="wnba">WNBA</option>
           </select>
 
@@ -262,12 +264,12 @@ export const GamesTable: React.FC<GamesTableProps> = ({
                                     className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-extrabold uppercase ${
                                       game.sourceType === 'nba'
                                         ? 'bg-[#0b0c12] text-[#6f7bdc] border border-[#6f7bdc]/60'
-                                        : game.sourceType === 'cbb'
-                                        ? 'bg-[#0b0c12] text-slate-200 border border-[#2a2f42]'
+                                        : game.sourceType === 'wcbb'
+                                        ? 'bg-[#0b0c12] text-fuchsia-300 border border-fuchsia-400/50'
                                         : 'bg-[#0b0c12] text-slate-200 border border-[#2a2f42]'
                                     }`}
                                   >
-                                    {game.sourceType === 'cbb' ? 'NCAA' : game.sourceType.toUpperCase()}
+                                    {LEAGUE_LABELS[leagueOf(game)]}
                                   </span>
                                   {game.isOvertime && (
                                     <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#0b0c12] text-[#6f7bdc] border border-[#6f7bdc]">

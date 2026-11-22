@@ -1,18 +1,20 @@
 import { Game, PlayerStats } from '../types';
 import { getGameSeason } from './statsCalculator';
 
-export type LeagueKey = 'nba' | 'wnba' | 'ncaa';
+export type LeagueKey = 'nba' | 'wnba' | 'ncaam' | 'ncaaw';
 
 export function leagueOf(game: Game): LeagueKey {
   if (game.sourceType === 'nba') return 'nba';
   if (game.sourceType === 'wnba') return 'wnba';
-  return 'ncaa';
+  if (game.sourceType === 'wcbb') return 'ncaaw';
+  return 'ncaam';
 }
 
 export const LEAGUE_LABELS: Record<LeagueKey, string> = {
   nba: 'NBA',
   wnba: 'WNBA',
-  ncaa: 'NCAA',
+  ncaam: 'NCAA Men',
+  ncaaw: 'NCAA Women',
 };
 
 /* ------------------------------------------------------------------ */

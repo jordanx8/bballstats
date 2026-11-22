@@ -9,6 +9,8 @@ import { Link } from './ui';
 import { paths } from '../services/router';
 import { sourceSiteName } from '../services/sourceSite';
 import { UPDATE_NOTES_WORKFLOW_URL } from '../services/github';
+import { periodLabel } from '../services/leagues';
+import { LEAGUE_LABELS, leagueOf } from '../services/leaderboards';
 
 interface GameBoxscoreViewProps {
   game: Game;
@@ -91,11 +93,7 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
   const isAwayWinner = game.winner === 'away';
   const isHomeWinner = game.winner === 'home';
 
-  const lineLabel = (idx: number) => {
-    const regulation = game.sourceType === 'cbb' ? 2 : 4;
-    if (idx >= regulation) return `OT${idx - regulation + 1}`;
-    return game.sourceType === 'cbb' ? `H${idx + 1}` : `Q${idx + 1}`;
-  };
+  const lineLabel = (idx: number) => periodLabel(game.sourceType, idx);
 
   return (
     <div className="space-y-6 pb-24">
@@ -126,7 +124,7 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
         <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-6 sm:px-8 py-4 bg-[#0b0c12]/70 border-b border-[#2a2f42]/80 text-xs text-slate-300">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             <span className="px-2.5 py-0.5 rounded text-[11px] font-black uppercase bg-[#0b0c12] text-[#6f7bdc] border border-[#6f7bdc]/60 tracking-wider">
-              {game.sourceType === 'cbb' ? 'NCAA Basketball' : game.sourceType.toUpperCase()}
+              {LEAGUE_LABELS[leagueOf(game)]}
             </span>
             <span className="flex items-center space-x-1.5">
               <Calendar className="w-3.5 h-3.5 text-[#6f7bdc]" />
@@ -169,7 +167,8 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
         </div>
 
         {/* Line score */}
-        {(game.awayTeam.lineScores.length > 0 || game.homeTeam.lineScores.length > 0) && (
+        {/* A single entry is just the final score (source had no per-period scores), so skip the table. */}
+        {(game.awayTeam.lineScores.length > 1 || game.homeTeam.lineScores.length > 1) && (
           <div className="px-4 sm:px-8 pb-6">
             <div className="max-w-xl mx-auto overflow-x-auto rounded-2xl border border-[#2a2f42]/80 bg-[#0b0c12]/50">
               <table className="w-full text-center text-sm">

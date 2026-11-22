@@ -3,8 +3,14 @@ import * as cheerio from 'cheerio';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
 import { Game, PlayerStats, TeamGameData, TeamTotals, SourceType } from '../src/types/index.js';
+import { isCollege, isOvertimeGame } from '../src/services/leagues.js';
 
 const execFileAsync = promisify(execFile);
+
+/** Sports-Reference marks women's college box scores with `_w` before `.html`. */
+function isWomensCollegeUrl(url: string): boolean {
+  return /_w\.html?(?:[?#].*)?$/i.test(url.trim());
+}
 
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 
@@ -76,7 +82,8 @@ export async function scrapeBoxscore(url: string): Promise<Game> {
 
   const isCbb = cleanUrl.includes('/cbb/');
   const isWnba = cleanUrl.includes('/wnba/');
-  const sourceType: SourceType = isCbb ? 'cbb' : isWnba ? 'wnba' : cleanUrl.includes('basketball-reference.com') ? 'nba' : 'sports-reference';
+  const collegeType: SourceType = isWomensCollegeUrl(cleanUrl) ? 'wcbb' : 'cbb';
+  const sourceType: SourceType = isCbb ? collegeType : isWnba ? 'wnba' : cleanUrl.includes('basketball-reference.com') ? 'nba' : 'sports-reference';
 
   const rawHtml = await fetchHtml(cleanUrl);
   if (!rawHtml || rawHtml.length < 500) {
@@ -93,14 +100,18 @@ export function parseBoxscoreHtml(rawHtml: string, url: string, defaultSourceTyp
 
   const $ = cheerio.load(processedHtml);
 
-  const isCbb = url.includes('/cbb/') || $('title').text().toLowerCase().includes('college basketball');
-  const isWnba = url.includes('/wnba/') || $('title').text().toLowerCase().includes('wnba');
-  const sourceType: SourceType = defaultSourceType || (isCbb ? 'cbb' : isWnba ? 'wnba' : 'nba');
+  const title = $('title').text().toLowerCase();
+  const isCbb = url.includes('/cbb/') || title.includes('college basketball');
+  const isWnba = url.includes('/wnba/') || title.includes('wnba');
+  const isWomensCollege = isWomensCollegeUrl(url) || title.includes('(women)');
+  const sourceType: SourceType = defaultSourceType || (isCbb ? (isWomensCollege ? 'wcbb' : 'cbb') : isWnba ? 'wnba' : 'nba');
 
-  // Extract Game ID from URL
+  // Extract Game ID from URL. Men's and women's college games share the `cbb-` prefix
+  // so a game's ID (and its links) never depends on which college league it is in.
   const urlParts = url.split('/');
   const lastPart = urlParts[urlParts.length - 1].replace('.html', '');
-  const id = `${sourceType}-${lastPart}`;
+  const idPrefix = isCollege(sourceType) ? 'cbb' : sourceType;
+  const id = `${idPrefix}-${lastPart}`;
 
   // 1. Parse Scorebox
   const scorebox = $('.scorebox');
@@ -346,11 +357,16 @@ export function parseBoxscoreHtml(rawHtml: string, url: string, defaultSourceTyp
   }
 
   // Fallback short names
+  // Sports-Reference names women's teams like the men's ("LSU"); mark them so team
+  // pages and records never merge a school's women's and men's teams.
+  const teamDisplayName = (name: string) =>
+    sourceType === 'wcbb' && !/\bwomen$/i.test(name) ? `${name} Women` : name;
+
   const awayShort = extractTeamCode(awayTeamName) || 'AWAY';
   const homeShort = extractTeamCode(homeTeamName) || 'HOME';
 
   const awayTeam: TeamGameData = {
-    name: awayTeamName || 'Away Team',
+    name: teamDisplayName(awayTeamName || 'Away Team'),
     shortName: awayShort,
     score: awayScore,
     record: awayRecord || undefined,
@@ -360,7 +376,7 @@ export function parseBoxscoreHtml(rawHtml: string, url: string, defaultSourceTyp
   };
 
   const homeTeam: TeamGameData = {
-    name: homeTeamName || 'Home Team',
+    name: teamDisplayName(homeTeamName || 'Home Team'),
     shortName: homeShort,
     score: homeScore,
     record: homeRecord || undefined,
@@ -370,7 +386,7 @@ export function parseBoxscoreHtml(rawHtml: string, url: string, defaultSourceTyp
   };
 
   const winner = homeScore >= awayScore ? 'home' : 'away';
-  const isOvertime = (awayLineScores.length > 4 && sourceType === 'nba') || (awayLineScores.length > 2 && sourceType === 'cbb');
+  const isOvertime = isOvertimeGame(sourceType, awayLineScores.length);
 
   return {
     id,

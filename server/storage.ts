@@ -161,7 +161,7 @@ export function computeStatsSummary(games: Game[]): UserStatsSummary {
     }
 
     // League
-    const leagueLabel = game.sourceType === 'nba' ? 'NBA' : game.sourceType === 'cbb' ? 'NCAA Men\'s (CBB)' : game.sourceType === 'wnba' ? 'WNBA' : 'Other';
+    const leagueLabel = game.sourceType === 'nba' ? 'NBA' : game.sourceType === 'cbb' ? 'NCAA Men' : game.sourceType === 'wcbb' ? 'NCAA Women' : game.sourceType === 'wnba' ? 'WNBA' : 'Other';
     leagueMap.set(leagueLabel, (leagueMap.get(leagueLabel) || 0) + 1);
 
     // Away Team Stats

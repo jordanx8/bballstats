@@ -1,4 +1,4 @@
-export type SourceType = 'nba' | 'cbb' | 'wnba' | 'sports-reference';
+export type SourceType = 'nba' | 'cbb' | 'wcbb' | 'wnba' | 'sports-reference';
 
 export interface PlayerStats {
   name: string;
