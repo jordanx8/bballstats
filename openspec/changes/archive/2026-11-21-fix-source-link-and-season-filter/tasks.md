@@ -26,4 +26,4 @@
 
 ## 5. End-to-end check
 
-- [ ] 5.1 After merging, run the Update Game Notes Action on GitHub for one game and verify the commit lands and the deployed box score shows the new notes
+- [x] 5.1 After merging, run the Update Game Notes Action on GitHub for one game and verify the commit lands and the deployed box score shows the new notes
