@@ -1,17 +1,21 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Game, PlayerStats, TeamGameData } from '../types';
 import {
   ArrowLeft, ExternalLink, Calendar, MapPin, Users,
-  StickyNote, Check, Edit2
+  StickyNote, Check, Edit2, Copy
 } from 'lucide-react';
 import { PlayerAvatar, TeamLogo } from './Media';
 import { Link } from './ui';
 import { paths } from '../services/router';
+import { sourceSiteName } from '../services/sourceSite';
+import { UPDATE_NOTES_WORKFLOW_URL } from '../services/github';
 
 interface GameBoxscoreViewProps {
   game: Game;
   onBack: () => void;
   onUpdateNotes: (gameId: string, notes: string) => Promise<void>;
+  /** True only when the local server is running, so a save actually persists. */
+  canEditNotes: boolean;
 }
 
 type TeamView = 'away' | 'home';
@@ -47,24 +51,43 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
   game,
   onBack,
   onUpdateNotes,
+  canEditNotes,
 }) => {
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [notesText, setNotesText] = useState(game.notes || '');
   const [isSavingNotes, setIsSavingNotes] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState(false);
+  const gameIdRef = useRef<HTMLElement>(null);
   const [teamView, setTeamView] = useState<TeamView>(game.winner === 'home' ? 'home' : 'away');
 
   const handleSaveNotes = async () => {
     setIsSavingNotes(true);
+    setSaveError(null);
     try {
       await onUpdateNotes(game.id, notesText);
       setIsEditingNotes(false);
     } catch (err) {
       console.error('Failed to save notes:', err);
+      setSaveError(err instanceof Error ? err.message : 'Could not save notes.');
     } finally {
       setIsSavingNotes(false);
     }
   };
 
+  const handleCopyId = async () => {
+    try {
+      await navigator.clipboard.writeText(game.id);
+      setCopiedId(true);
+      setTimeout(() => setCopiedId(false), 1500);
+    } catch (err) {
+      // Clipboard blocked: select the ID so it can be copied by hand.
+      console.error('Failed to copy game ID:', err);
+      if (gameIdRef.current) window.getSelection()?.selectAllChildren(gameIdRef.current);
+    }
+  };
+
+  const sourceSite = sourceSiteName(game.sourceUrl);
   const isAwayWinner = game.winner === 'away';
   const isHomeWinner = game.winner === 'home';
 
@@ -92,7 +115,7 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
           rel="noopener noreferrer"
           className="inline-flex items-center space-x-1.5 text-xs text-[#b4bffd] hover:text-[#6f7bdc] bg-[#14161f] hover:bg-[#1e2230] border border-[#2a2f42] px-3.5 py-2 rounded-xl transition-colors font-bold shadow-md"
         >
-          <span>View on {game.sourceType === 'cbb' ? 'Sports-Reference' : 'Basketball-Reference'}</span>
+          <span>{sourceSite ? `View on ${sourceSite}` : 'View source'}</span>
           <ExternalLink className="w-3.5 h-3.5" />
         </a>
       </div>
@@ -235,7 +258,7 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
             <StickyNote className="w-4 h-4 text-[#b4bffd]" />
             <h3 className="text-sm font-bold text-white uppercase tracking-wider">Your Personal Memory &amp; Notes</h3>
           </div>
-          {!isEditingNotes && (
+          {canEditNotes && !isEditingNotes && (
             <button
               onClick={() => setIsEditingNotes(true)}
               className="text-xs text-[#b4bffd] hover:text-[#6f7bdc] font-bold flex items-center space-x-1"
@@ -246,7 +269,7 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
           )}
         </div>
 
-        {isEditingNotes ? (
+        {canEditNotes && isEditingNotes ? (
           <div className="space-y-3">
             <textarea
               value={notesText}
@@ -254,10 +277,12 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
               placeholder="e.g. Sat 5 rows from court with friends, awesome game-winner in overtime!"
               className="w-full bg-[#0b0c12] border border-[#2a2f42] rounded-2xl p-3.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-[#8b9bf5] min-h-[90px]"
             />
+            {saveError && <p className="text-xs text-red-400">{saveError}</p>}
             <div className="flex items-center space-x-2 justify-end">
               <button
                 onClick={() => {
                   setNotesText(game.notes || '');
+                  setSaveError(null);
                   setIsEditingNotes(false);
                 }}
                 className="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
@@ -276,8 +301,41 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
           </div>
         ) : (
           <p className="text-sm text-slate-200 bg-[#0b0c12]/80 p-3.5 rounded-2xl border border-[#2a2f42]/80">
-            {game.notes || <span className="text-slate-400 italic">No notes logged for this game yet. Click "Add Note" to record your memories!</span>}
+            {game.notes || (
+              <span className="text-slate-400 italic">
+                {canEditNotes
+                  ? 'No notes logged for this game yet. Click "Add Note" to record your memories!'
+                  : 'No notes logged for this game yet.'}
+              </span>
+            )}
           </p>
+        )}
+
+        {!canEditNotes && (
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
+            <div className="flex items-center gap-2 min-w-0">
+              <span>Game ID</span>
+              <code ref={gameIdRef} className="px-2 py-0.5 rounded bg-[#0b0c12] border border-[#2a2f42] text-slate-200 truncate">{game.id}</code>
+              <button
+                onClick={handleCopyId}
+                className="inline-flex items-center gap-1 text-[#b4bffd] hover:text-[#6f7bdc] font-bold shrink-0"
+                aria-label="Copy game ID"
+              >
+                {copiedId ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copiedId ? 'Copied' : 'Copy'}</span>
+              </button>
+            </div>
+            <a
+              href={UPDATE_NOTES_WORKFLOW_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-[#b4bffd] hover:text-[#6f7bdc] font-bold"
+            >
+              <Edit2 className="w-3.5 h-3.5" />
+              <span>Edit on GitHub</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
         )}
       </div>
 

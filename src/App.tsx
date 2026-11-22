@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Game, UserStatsSummary } from './types';
-import { fetchGames, fetchStats, updateGame } from './services/api';
+import { fetchGames, fetchStats, updateGame, isServerAvailable } from './services/api';
 import { Navbar, TabKey } from './components/Navbar';
 import { Dashboard } from './components/Dashboard';
 import { GamesTable } from './components/GamesTable';
@@ -96,6 +96,7 @@ export function App() {
             game={game}
             onBack={() => goBack(paths.games)}
             onUpdateNotes={handleUpdateNotes}
+            canEditNotes={isServerAvailable()}
           />
         );
       }

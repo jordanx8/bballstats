@@ -1,0 +1,82 @@
+name: Update Game Notes & Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Game ID (e.g. nba-202411110NOP) or exact Boxscore URL'
+        required: true
+        type: string
+      notes:
+        description: 'New notes for the game (replaces the current notes)'
+        required: false
+        type: string
+      clear:
+        description: 'Remove the notes instead (ignores the notes field)'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: false
+
+jobs:
+  update-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      # Inputs are passed only through env so free-text notes are never parsed by the shell.
+      - name: Update Notes
+        id: update
+        env:
+          TARGET: ${{ inputs.target }}
+          NOTES: ${{ inputs.notes }}
+          CLEAR: ${{ inputs.clear }}
+        run: npx tsx scripts/update-notes.ts
+
+      - name: Commit and Push Updated Data
+        env:
+          GAME_ID: ${{ steps.update.outputs.game_id }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/games.json
+          git diff --staged --quiet || (git commit -m "data: update notes for $GAME_ID [skip ci]" && git push)
+
+      - name: Build Vite React App
+        run: npm run build
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

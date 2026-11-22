@@ -60,6 +60,13 @@ All game additions and removals are managed cleanly via **GitHub Actions** (`wor
 2. Select **"Remove Game & Deploy to GitHub Pages"** in the left sidebar.
 3. Click **Run workflow**, enter the **Game ID** (e.g. `nba-202411110NOP` or the boxscore URL), and click **Run workflow**.
 
+### 4. Update a Game's Notes
+1. Go to your repository's **Actions** tab on GitHub.
+2. Select **"Update Game Notes & Deploy"** in the left sidebar.
+3. Click **Run workflow** and enter the **Game ID** or exact **Boxscore URL**. The game ID is shown in the notes section of each box score page.
+4. Type the new notes in the **notes** field (it replaces the current notes), or tick **clear** to remove them.
+5. Click the green **Run workflow** button. The updated notes appear on the site once the deploy finishes.
+
 ---
 
 ## 🤖 Local CLI Commands
@@ -83,6 +90,10 @@ npm run import-games -- --file urls.txt
 # Remove a game locally:
 npm run delete-game -- --target "nba-202411110NOP"
 
+# Set or clear a game's notes locally:
+npm run update-notes -- --target "nba-202411110NOP" --notes "Sat in lower bowl with friends"
+npm run update-notes -- --target "nba-202411110NOP" --clear
+
 # Refresh team logos / player headshots (incremental; add --force to rebuild everything)
 npm run build-media
 ```
@@ -98,6 +109,7 @@ The scrape and bulk-import workflows run `build-media` automatically and commit 
 │   ├── scrape-and-deploy.yml       # Manual workflow to scrape a single game + deploy
 │   ├── bulk-import-and-deploy.yml  # Manual workflow to bulk import a list of URLs + deploy
 │   ├── remove-game.yml             # Manual workflow to remove game + deploy
+│   ├── update-notes.yml            # Manual workflow to set or clear a game's notes + deploy
 │   └── deploy-pages.yml            # Automatic deploy on push to main
 ├── data/
 │   ├── games.json                  # Local persistent JSON database of all attended games
@@ -106,7 +118,8 @@ The scrape and bulk-import workflows run `build-media` automatically and commit 
 │   ├── build-media.ts              # Matches games to ESPN events to fetch logos & headshots
 │   ├── scrape-game.ts              # CLI scraping single game entrypoint
 │   ├── import-games.ts             # CLI bulk import entrypoint
-│   └── delete-game.ts              # CLI delete entrypoint
+│   ├── delete-game.ts              # CLI delete entrypoint
+│   └── update-notes.ts             # CLI set/clear notes entrypoint
 ├── server/
 │   ├── index.ts                # Express REST API
 │   ├── scraper.ts              # Cheerio/Curl scraper for Basketball & Sports Reference

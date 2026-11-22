@@ -13,7 +13,8 @@
     "scrape": "tsx scripts/scrape-game.ts",
     "import-games": "tsx scripts/import-games.ts",
     "delete-game": "tsx scripts/delete-game.ts",
-    "build-media": "tsx scripts/build-media.ts"
+    "build-media": "tsx scripts/build-media.ts",
+    "update-notes": "tsx scripts/update-notes.ts"
   },
   "dependencies": {
     "axios": "^1.7.9",

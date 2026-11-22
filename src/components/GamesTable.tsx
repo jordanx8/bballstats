@@ -83,7 +83,7 @@ export const GamesTable: React.FC<GamesTableProps> = ({
       }
       return 0;
     });
-  }, [games, search, leagueFilter, sortBy]);
+  }, [games, search, leagueFilter, seasonFilter, sortBy]);
 
   // Find game high scorer helper
   const getGameTopScorer = (game: Game) => {
