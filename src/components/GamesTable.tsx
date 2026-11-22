@@ -266,6 +266,10 @@ export const GamesTable: React.FC<GamesTableProps> = ({
                                         ? 'bg-[#0b0c12] text-[#6f7bdc] border border-[#6f7bdc]/60'
                                         : game.sourceType === 'wcbb'
                                         ? 'bg-[#0b0c12] text-fuchsia-300 border border-fuchsia-400/50'
+                                        : game.sourceType === 'cbb'
+                                        ? 'bg-[#0b0c12] text-amber-300 border border-amber-400/50'
+                                        : game.sourceType === 'wnba'
+                                        ? 'bg-[#0b0c12] text-orange-400 border border-orange-500/60'
                                         : 'bg-[#0b0c12] text-slate-200 border border-[#2a2f42]'
                                     }`}
                                   >
