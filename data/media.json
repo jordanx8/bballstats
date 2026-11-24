@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-24T13:11:02.812Z",
+  "generatedAt": "2026-11-24T13:22:24.833Z",
   "processedGames": [
     "cbb-2018-02-17-14-louisiana-state",
     "cbb-2018-11-06-20-louisiana-state",
@@ -65,6 +65,7 @@
     "cbb-2026-11-06-20-louisiana-state",
     "cbb-2026-11-09-20-louisiana-state",
     "cbb-2026-11-18-20-louisiana-state",
+    "cbb-2026-11-21-01-louisiana-state",
     "cbb-2026-11-21-12-louisiana-state",
     "nba-201612210NOP",
     "nba-201810270NOP",
@@ -160,6 +161,7 @@
     "Portland Trail Blazers": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/por.png",
     "Prairie View A&M": "https://a.espncdn.com/i/teamlogos/ncaa/500/2504.png",
     "Queens": "https://a.espncdn.com/i/teamlogos/ncaa/500/2511.png",
+    "Queens (NC)": "https://a.espncdn.com/i/teamlogos/ncaa/500/2511.png",
     "Sacramento Kings": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/sac.png",
     "San Antonio Spurs": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/sa.png",
     "SMU": "https://a.espncdn.com/i/teamlogos/ncaa/500/2567.png",
