@@ -263,13 +263,13 @@ export const GamesTable: React.FC<GamesTableProps> = ({
                                   <span
                                     className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-extrabold uppercase ${
                                       game.sourceType === 'nba'
-                                        ? 'bg-[#0b0c12] text-[#6f7bdc] border border-[#6f7bdc]/60'
+                                        ? 'bg-sky-400/10 text-sky-300 border border-sky-400/60'
                                         : game.sourceType === 'wcbb'
-                                        ? 'bg-[#0b0c12] text-fuchsia-300 border border-fuchsia-400/50'
+                                        ? 'bg-fuchsia-400/10 text-fuchsia-300 border border-fuchsia-400/50'
                                         : game.sourceType === 'cbb'
-                                        ? 'bg-[#0b0c12] text-amber-300 border border-amber-400/50'
+                                        ? 'bg-amber-400/10 text-amber-300 border border-amber-400/50'
                                         : game.sourceType === 'wnba'
-                                        ? 'bg-[#0b0c12] text-orange-400 border border-orange-500/60'
+                                        ? 'bg-orange-500/10 text-orange-400 border border-orange-500/60'
                                         : 'bg-[#0b0c12] text-slate-200 border border-[#2a2f42]'
                                     }`}
                                   >
