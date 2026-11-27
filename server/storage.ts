@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { Game, UserStatsSummary, AggregatedPlayerStat, AggregatedTeamStat } from '../src/types/index.js';
 import { canonicalVenue } from '../src/services/venues.js';
+import { parseMinutes } from '../src/services/statsCalculator.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -46,7 +47,17 @@ export function addGame(game: Game): { game: Game; isNew: boolean } {
   
   if (existingIdx >= 0) {
     // Update existing game
-    games[existingIdx] = { ...game, submittedAt: games[existingIdx].submittedAt || game.submittedAt };
+    const previous = games[existingIdx];
+    const updated: Game = { ...game, submittedAt: previous.submittedAt || game.submittedAt };
+    // A re-scrape whose rank lookup failed keeps the ranks found earlier.
+    if (!updated.espnEventId && previous.espnEventId) {
+      updated.espnEventId = previous.espnEventId;
+      updated.homeTeam = { ...updated.homeTeam, rank: previous.homeTeam.rank };
+      updated.awayTeam = { ...updated.awayTeam, rank: previous.awayTeam.rank };
+      if (updated.homeTeam.rank === undefined) delete updated.homeTeam.rank;
+      if (updated.awayTeam.rank === undefined) delete updated.awayTeam.rank;
+    }
+    games[existingIdx] = updated;
     saveGames(games);
     return { game: games[existingIdx], isNew: false };
   } else {
@@ -128,6 +139,7 @@ export function computeStatsSummary(games: Game[]): UserStatsSummary {
     playerName: string;
     gamesSeen: number;
     teamsPlayedFor: Set<string>;
+    totalMinutes: number;
     totalPts: number;
     totalReb: number;
     totalAst: number;
@@ -206,6 +218,7 @@ export function computeStatsSummary(games: Game[]): UserStatsSummary {
           playerName: normalizedName,
           gamesSeen: 0,
           teamsPlayedFor: new Set<string>(),
+          totalMinutes: 0,
           totalPts: 0,
           totalReb: 0,
           totalAst: 0,
@@ -217,6 +230,7 @@ export function computeStatsSummary(games: Game[]): UserStatsSummary {
 
         pEntry.gamesSeen += 1;
         pEntry.teamsPlayedFor.add(teamName);
+        pEntry.totalMinutes += parseMinutes(p.mp);
         pEntry.totalPts += p.pts;
         pEntry.totalReb += p.trb;
         pEntry.totalAst += p.ast;
@@ -264,6 +278,7 @@ export function computeStatsSummary(games: Game[]): UserStatsSummary {
       playerName: p.playerName,
       gamesSeen: p.gamesSeen,
       teamsPlayedFor: Array.from(p.teamsPlayedFor),
+      totalMinutes: Math.round(p.totalMinutes),
       totalPts: p.totalPts,
       avgPts: p.gamesSeen > 0 ? Number((p.totalPts / p.gamesSeen).toFixed(1)) : 0,
       totalReb: p.totalReb,
@@ -277,7 +292,7 @@ export function computeStatsSummary(games: Game[]): UserStatsSummary {
       highScoreGameId: p.highScoreGameId,
       highScoreMatchup: p.highScoreMatchup,
     }))
-    .sort((a, b) => b.gamesSeen - a.gamesSeen || b.totalPts - a.totalPts);
+    .sort((a, b) => b.gamesSeen - a.gamesSeen || b.totalMinutes - a.totalMinutes || b.totalPts - a.totalPts);
 
   // Sort Top scoring performances
   const topScoringPerformances = allPerformances

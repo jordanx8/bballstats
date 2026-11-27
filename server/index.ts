@@ -3,6 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { scrapeBoxscore } from './scraper.js';
+import { applyRanks } from './espn.js';
 import { loadGames, saveGames, addGame, deleteGame, computeStatsSummary } from './storage.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -52,7 +53,8 @@ app.post('/api/games/scrape', async (req: Request, res: Response) => {
     if (notes) {
       scrapedGame.notes = notes;
     }
-    
+
+    await applyRanks(scrapedGame);
     const { game, isNew } = addGame(scrapedGame);
     const summary = computeStatsSummary(loadGames());
 

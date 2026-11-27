@@ -1,5 +1,6 @@
 import fs from 'fs';
 import { scrapeBoxscore } from '../server/scraper.js';
+import { applyRanks } from '../server/espn.js';
 import { addGame, loadGames, computeStatsSummary } from '../server/storage.js';
 
 interface ImportItem {
@@ -122,6 +123,7 @@ async function main() {
         scrapedGame.notes = notes;
       }
 
+      await applyRanks(scrapedGame);
       const { game, isNew } = addGame(scrapedGame);
       successCount++;
       console.log(`      ✅ ${isNew ? 'Added' : 'Updated'}: ${game.awayTeam.name} (${game.awayTeam.score}) @ ${game.homeTeam.name} (${game.homeTeam.score}) - ${game.formattedDate || game.date}`);

@@ -70,7 +70,7 @@ export const PlayersLeaderboard: React.FC<PlayersLeaderboardProps> = ({ games })
       const bv = valueOf(b, sortKey);
       if (typeof av === 'string' && typeof bv === 'string') return av.localeCompare(bv) * dir;
       const diff = ((av as number) - (bv as number)) * dir;
-      return diff || b.gamesSeen - a.gamesSeen || a.playerName.localeCompare(b.playerName);
+      return diff || b.gamesSeen - a.gamesSeen || b.minutes - a.minutes || a.playerName.localeCompare(b.playerName);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows, search, league, season, team, minGames, sortKey, sortDir, mode]);

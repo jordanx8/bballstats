@@ -31,6 +31,14 @@ export function getGameSeason(gameDateStr: string, _sourceType?: string): string
   }
 }
 
+/** Minutes played as a number: "39:49" -> 39.82, "32" -> 32, missing -> 0. */
+export function parseMinutes(mp?: string): number {
+  if (!mp) return 0;
+  const [m, s] = mp.split(':');
+  const minutes = Number(m) + (s ? Number(s) / 60 : 0);
+  return Number.isFinite(minutes) ? minutes : 0;
+}
+
 export function computeStatsSummaryClient(games: Game[]): UserStatsSummary {
   if (games.length === 0) {
     return {
@@ -60,6 +68,7 @@ export function computeStatsSummaryClient(games: Game[]): UserStatsSummary {
     playerName: string;
     gamesSeen: number;
     teamsPlayedFor: Set<string>;
+    totalMinutes: number;
     totalPts: number;
     totalReb: number;
     totalAst: number;
@@ -137,6 +146,7 @@ export function computeStatsSummaryClient(games: Game[]): UserStatsSummary {
           playerName: normalizedName,
           gamesSeen: 0,
           teamsPlayedFor: new Set<string>(),
+          totalMinutes: 0,
           totalPts: 0,
           totalReb: 0,
           totalAst: 0,
@@ -148,6 +158,7 @@ export function computeStatsSummaryClient(games: Game[]): UserStatsSummary {
 
         pEntry.gamesSeen += 1;
         pEntry.teamsPlayedFor.add(teamName);
+        pEntry.totalMinutes += parseMinutes(p.mp);
         pEntry.totalPts += p.pts;
         pEntry.totalReb += p.trb;
         pEntry.totalAst += p.ast;
@@ -195,6 +206,7 @@ export function computeStatsSummaryClient(games: Game[]): UserStatsSummary {
       playerName: p.playerName,
       gamesSeen: p.gamesSeen,
       teamsPlayedFor: Array.from(p.teamsPlayedFor),
+      totalMinutes: Math.round(p.totalMinutes),
       totalPts: p.totalPts,
       avgPts: p.gamesSeen > 0 ? Number((p.totalPts / p.gamesSeen).toFixed(1)) : 0,
       totalReb: p.totalReb,
@@ -208,7 +220,7 @@ export function computeStatsSummaryClient(games: Game[]): UserStatsSummary {
       highScoreGameId: p.highScoreGameId,
       highScoreMatchup: p.highScoreMatchup,
     }))
-    .sort((a, b) => b.gamesSeen - a.gamesSeen || b.totalPts - a.totalPts);
+    .sort((a, b) => b.gamesSeen - a.gamesSeen || b.totalMinutes - a.totalMinutes || b.totalPts - a.totalPts);
 
   // Sort Top scoring performances
   const topScoringPerformances = allPerformances

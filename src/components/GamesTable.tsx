@@ -291,7 +291,10 @@ export const GamesTable: React.FC<GamesTableProps> = ({
                                     <span className="w-10 text-xs uppercase font-mono tracking-wider text-[#6f7bdc]">
                                       {game.awayTeam.shortName || 'AWY'}
                                     </span>
-                                    <span className="truncate">{game.awayTeam.name}</span>
+                                    <span className="truncate">
+                                      {game.awayTeam.rank && <span className="text-slate-400 font-semibold">#{game.awayTeam.rank} </span>}
+                                      {game.awayTeam.name}
+                                    </span>
                                     {isAwayWinner && <span className="text-[10px] text-[#6f7bdc] font-bold">✓</span>}
                                   </div>
                                   {/* Home */}
@@ -299,7 +302,10 @@ export const GamesTable: React.FC<GamesTableProps> = ({
                                     <span className="w-10 text-xs uppercase font-mono tracking-wider text-[#6f7bdc]">
                                       {game.homeTeam.shortName || 'HME'}
                                     </span>
-                                    <span className="truncate">{game.homeTeam.name}</span>
+                                    <span className="truncate">
+                                      {game.homeTeam.rank && <span className="text-slate-400 font-semibold">#{game.homeTeam.rank} </span>}
+                                      {game.homeTeam.name}
+                                    </span>
                                     {isHomeWinner && <span className="text-[10px] text-[#6f7bdc] font-bold">✓</span>}
                                   </div>
                                 </div>

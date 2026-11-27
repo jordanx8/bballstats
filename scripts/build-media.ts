@@ -13,19 +13,11 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import type { Game } from '../src/types/index.js';
 import { normalizeName } from '../src/services/mediaKeys.js';
+import { ESPN_BASE as BASE, SPORT_PATHS, type Sport, findEspnEvent, getJson } from '../server/espn.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const GAMES_FILE = path.resolve(__dirname, '../data/games.json');
 const MEDIA_FILE = path.resolve(__dirname, '../data/media.json');
-
-const BASE = 'https://site.api.espn.com/apis/site/v2/sports/basketball/';
-const SPORT_PATHS = {
-  nba: 'nba',
-  wnba: 'wnba',
-  mens: 'mens-college-basketball',
-  womens: 'womens-college-basketball',
-} as const;
-type Sport = keyof typeof SPORT_PATHS;
 
 interface MediaFile {
   generatedAt: string;
@@ -42,68 +34,6 @@ const TEAM_LOGO_OVERRIDES: Record<string, { copyFrom?: string; url?: string }> =
   'LSU Tigers': { copyFrom: 'LSU' },
   'UCF Knights': { url: 'https://a.espncdn.com/i/teamlogos/ncaa/500/2116.png' },
 };
-
-async function getJson(url: string): Promise<any> {
-  let lastErr: unknown;
-  for (let attempt = 0; attempt < 3; attempt++) {
-    try {
-      const res = await fetch(url);
-      if (res.ok) return await res.json();
-      lastErr = new Error(`HTTP ${res.status}`);
-    } catch (err) {
-      lastErr = err;
-    }
-    await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
-  }
-  throw lastErr;
-}
-
-const scoreboardCache = new Map<string, Promise<any[]>>();
-
-function getScoreboard(sport: Sport, yyyymmdd: string): Promise<any[]> {
-  const key = `${sport}:${yyyymmdd}`;
-  let cached = scoreboardCache.get(key);
-  if (!cached) {
-    const groups = sport === 'mens' || sport === 'womens' ? '&groups=50&limit=400' : '';
-    cached = getJson(`${BASE}${SPORT_PATHS[sport]}/scoreboard?dates=${yyyymmdd}${groups}`)
-      .then(data => (data.events as any[]) || [])
-      .catch(() => []);
-    scoreboardCache.set(key, cached);
-  }
-  return cached;
-}
-
-function sportsToTry(game: Game): Sport[] {
-  if (game.sourceType === 'nba') return ['nba'];
-  if (game.sourceType === 'wnba') return ['wnba'];
-  if (game.sourceType === 'wcbb') return ['womens'];
-  return ['mens', 'womens'];
-}
-
-function shiftDate(isoDate: string, days: number): string {
-  const d = new Date(`${isoDate}T12:00:00Z`);
-  d.setUTCDate(d.getUTCDate() + days);
-  return d.toISOString().slice(0, 10).replace(/-/g, '');
-}
-
-async function findEvent(game: Game): Promise<{ sport: Sport; event: any } | null> {
-  const isoDate = game.date.slice(0, 10);
-  for (const sport of sportsToTry(game)) {
-    for (const offset of [0, -1, 1]) {
-      const events = await getScoreboard(sport, shiftDate(isoDate, offset));
-      for (const event of events) {
-        const comps = event.competitions?.[0]?.competitors || [];
-        const home = comps.find((c: any) => c.homeAway === 'home');
-        const away = comps.find((c: any) => c.homeAway === 'away');
-        if (!home || !away) continue;
-        if (Number(home.score) === game.homeTeam.score && Number(away.score) === game.awayTeam.score) {
-          return { sport, event };
-        }
-      }
-    }
-  }
-  return null;
-}
 
 function defaultHeadshot(sport: Sport, id: string): string {
   return `https://a.espncdn.com/i/headshots/${SPORT_PATHS[sport]}/players/full/${id}.png`;
@@ -127,7 +57,7 @@ async function main() {
   let index = 0;
   for (const game of pending) {
     index++;
-    const found = await findEvent(game);
+    const found = await findEspnEvent(game);
     if (!found) {
       unmatched.push(`${game.id} (${game.awayTeam.name} @ ${game.homeTeam.name}, ${game.date})`);
       continue;
@@ -135,9 +65,7 @@ async function main() {
     const { sport, event } = found;
 
     // Team logos from the scoreboard competitors
-    const comps = event.competitions[0].competitors as any[];
-    const home = comps.find(c => c.homeAway === 'home');
-    const away = comps.find(c => c.homeAway === 'away');
+    const { home, away } = found;
     if (home?.team?.logo) media.teams[game.homeTeam.name] = home.team.logo;
     if (away?.team?.logo) media.teams[game.awayTeam.name] = away.team.logo;
 

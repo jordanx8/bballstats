@@ -1,4 +1,5 @@
 import { scrapeBoxscore } from '../server/scraper.js';
+import { applyRanks } from '../server/espn.js';
 import { addGame, loadGames, computeStatsSummary } from '../server/storage.js';
 
 function getCliArgs(): { url: string; notes?: string } {
@@ -40,6 +41,7 @@ async function main() {
       scrapedGame.notes = notes;
     }
 
+    await applyRanks(scrapedGame);
     const { game, isNew } = addGame(scrapedGame);
     const allGames = loadGames();
     const summary = computeStatsSummary(allGames);
@@ -49,6 +51,9 @@ async function main() {
     console.log(`   - Matchup: ${game.awayTeam.name} (${game.awayTeam.score}) @ ${game.homeTeam.name} (${game.homeTeam.score})`);
     console.log(`   - Winner: ${game.winner === 'away' ? game.awayTeam.name : game.homeTeam.name}`);
     if (game.arena) console.log(`   - Arena: ${game.arena}`);
+    if (game.homeTeam.rank || game.awayTeam.rank) {
+      console.log(`   - AP ranks: ${game.awayTeam.name} ${game.awayTeam.rank ? '#' + game.awayTeam.rank : 'unranked'}, ${game.homeTeam.name} ${game.homeTeam.rank ? '#' + game.homeTeam.rank : 'unranked'}`);
+    }
     console.log(`   - Away Players: ${game.awayTeam.players.length}, Home Players: ${game.homeTeam.players.length}`);
     console.log(`\n📊 Total Games in Passport: ${summary.totalGames}`);
     console.log(`   Total Points Witnessed: ${summary.totalPointsSeen}`);

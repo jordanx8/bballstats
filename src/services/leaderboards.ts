@@ -1,5 +1,5 @@
 import { Game, PlayerStats } from '../types';
-import { getGameSeason } from './statsCalculator';
+import { getGameSeason, parseMinutes } from './statsCalculator';
 
 export type LeagueKey = 'nba' | 'wnba' | 'ncaam' | 'ncaaw';
 
@@ -99,6 +99,8 @@ export interface PlayerLeaderboardRow {
   leagues: LeagueKey[];
   seasons: string[];
   gamesSeen: number;
+  /** Total minutes played across games seen. */
+  minutes: number;
   pts: number;
   trb: number;
   ast: number;
@@ -146,6 +148,7 @@ export function computePlayerLeaderboard(games: Game[]): PlayerLeaderboardRow[] 
             leagues: new Set<LeagueKey>(),
             seasons: new Set<string>(),
             gamesSeen: 0,
+            minutes: 0,
             pts: 0, trb: 0, ast: 0, stl: 0, blk: 0,
             fg3: 0, fg3a: 0, fg: 0, fga: 0, ft: 0, fta: 0, tov: 0,
             highPts: 0,
@@ -153,6 +156,7 @@ export function computePlayerLeaderboard(games: Game[]): PlayerLeaderboardRow[] 
           } as Acc);
 
         row.gamesSeen += 1;
+        row.minutes += parseMinutes(p.mp);
         row.teams.add(team.name);
         row.leagues.add(league);
         row.seasons.add(season);

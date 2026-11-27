@@ -15,6 +15,7 @@ All game additions and removals are managed cleanly via **GitHub Actions** (`wor
   - **Basketball Reference** (e.g. `https://www.basketball-reference.com/boxscores/202411110NOP.html`)
   - **Sports Reference CBB** (e.g. `https://www.sports-reference.com/cbb/boxscores/2024-11-06-20-louisiana-state.html`)
 - **Team Logos & Player Headshots**: Pulled from ESPN and stored in [`data/media.json`](data/media.json) (see `npm run build-media`). Anything without an image falls back to initials.
+- **Game-Day AP Rankings (NCAA)**: Each college team's AP Top 25 rank on the day you saw it (e.g. **#17 Kentucky**), shown in the games list and box score header. Ranks come from ESPN's public scoreboard and are looked up automatically when a game is added; unranked teams show no marker.
 - **Dashboard Analytics**:
   - **Most Seen Teams**: Frequency, win/loss records when you attend, win percentage, PPG, and home/away splits.
   - **Most Seen Players**: Frequency, scoring averages (PPG), rebounds (RPG), assists (APG), steals, blocks, and career-highs witnessed.
@@ -96,6 +97,9 @@ npm run update-notes -- --target "nba-202411110NOP" --clear
 
 # Refresh team logos / player headshots (incremental; add --force to rebuild everything)
 npm run build-media
+
+# Add game-day AP ranks to NCAA games already logged (skips games already matched; add --force to redo all)
+npm run backfill-rankings
 ```
 
 The scrape and bulk-import workflows run `build-media` automatically and commit any changes to `data/media.json`.
@@ -116,12 +120,14 @@ The scrape and bulk-import workflows run `build-media` automatically and commit 
 │   └── media.json                  # Team logo + player headshot URL lookup (generated)
 ├── scripts/
 │   ├── build-media.ts              # Matches games to ESPN events to fetch logos & headshots
+│   ├── backfill-rankings.ts        # Adds game-day AP ranks to logged NCAA games
 │   ├── scrape-game.ts              # CLI scraping single game entrypoint
 │   ├── import-games.ts             # CLI bulk import entrypoint
 │   ├── delete-game.ts              # CLI delete entrypoint
 │   └── update-notes.ts             # CLI set/clear notes entrypoint
 ├── server/
 │   ├── index.ts                # Express REST API
+│   ├── espn.ts                 # ESPN event matching + game-day AP rank lookup
 │   ├── scraper.ts              # Cheerio/Curl scraper for Basketball & Sports Reference
 │   └── storage.ts              # JSON file reader/writer & stat aggregator
 ├── src/

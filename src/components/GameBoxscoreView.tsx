@@ -394,6 +394,7 @@ const ScoreTeam: React.FC<{
         {label}{team.record ? ` · ${team.record}` : ''}
       </div>
       <h2 className={`text-lg sm:text-2xl font-black leading-tight break-words ${isWinner ? 'text-white' : 'text-slate-400'}`}>
+        {team.rank && <span className="text-slate-400 font-bold">#{team.rank} </span>}
         <Link to={paths.team(team.name)} className="hover:text-[#b4bffd] transition-colors">{team.name}</Link>
       </h2>
       {isWinner && (

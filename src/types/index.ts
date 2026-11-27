@@ -53,6 +53,8 @@ export interface TeamGameData {
   shortName: string;
   score: number;
   record?: string;
+  /** AP Top 25 rank as of this game (1-25); absent when unranked or unknown. NCAA only. */
+  rank?: number;
   lineScores: number[];
   players: PlayerStats[];
   totals?: TeamTotals;
@@ -73,6 +75,8 @@ export interface Game {
   winner: 'home' | 'away';
   isOvertime?: boolean;
   notes?: string;
+  /** ESPN event this game was matched to (set once a rank lookup succeeds). */
+  espnEventId?: string;
   submittedAt: string;
 }
 
@@ -94,6 +98,7 @@ export interface AggregatedPlayerStat {
   teamsPlayedFor: string[];
   totalPts: number;
   avgPts: number;
+  totalMinutes: number;
   totalReb: number;
   avgReb: number;
   totalAst: number;
