@@ -3,6 +3,7 @@ import { Game } from '../types';
 import { Search, Calendar, MapPin, Award, StickyNote, Trophy } from 'lucide-react';
 import { getGameSeason } from '../services/statsCalculator';
 import { LEAGUE_LABELS, leagueOf } from '../services/leaderboards';
+import { GAME_TYPE_LABELS } from '../services/leagues';
 
 interface GamesTableProps {
   games: Game[];
@@ -277,7 +278,7 @@ export const GamesTable: React.FC<GamesTableProps> = ({
                                   </span>
                                   {game.gameType && (
                                     <span className="inline-block px-1.5 py-0.5 rounded text-[10px] font-extrabold uppercase bg-slate-400/10 text-slate-200 border border-slate-400/50">
-                                      {game.gameType}
+                                      {GAME_TYPE_LABELS[game.gameType]}
                                     </span>
                                   )}
                                   {game.isOvertime && (

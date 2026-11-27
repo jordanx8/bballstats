@@ -47,6 +47,7 @@ All game additions and removals are managed cleanly via **GitHub Actions** (`wor
 2. Select **"Scrape Game & Deploy to GitHub Pages"** in the left sidebar.
 3. Click **Run workflow**.
 4. Paste the Basketball-Reference or Sports-Reference URL in the **Boxscore URL** field and enter any optional personal notes.
+   - Optionally pick a **Game type** (`none`, `preseason`, `exhibition`, or `playoff`). Leave it as `none` for regular-season games. A typed game gets a PRESEASON / EXHIBITION / PLAYOFFS badge next to its league badge. Re-scraping a game with `none` keeps any type it already has.
 5. Click the green **Run workflow** button.
 
 ### 2. Bulk Import Multiple Games
@@ -87,6 +88,9 @@ npm run scrape -- --url "https://www.basketball-reference.com/boxscores/20241111
 # Bulk import multiple games locally:
 npm run import-games -- --urls "https://www.basketball-reference.com/boxscores/202411110NOP.html, https://www.sports-reference.com/cbb/boxscores/2024-11-06-20-louisiana-state.html"
 npm run import-games -- --file urls.txt
+
+# Scrape a game and mark its type (none | preseason | exhibition | playoff):
+npm run scrape -- --url "https://www.basketball-reference.com/boxscores/202404290NOP.html" --game-type playoff
 
 # Remove a game locally:
 npm run delete-game -- --target "nba-202411110NOP"

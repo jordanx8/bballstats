@@ -76,7 +76,7 @@ export interface Game {
   isOvertime?: boolean;
   notes?: string;
   /** Set only for non-regular-season games. */
-  gameType?: 'preseason' | 'exhibition';
+  gameType?: 'preseason' | 'exhibition' | 'playoff';
   /** ESPN event this game was matched to (set once a rank lookup succeeds). */
   espnEventId?: string;
   submittedAt: string;

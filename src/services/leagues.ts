@@ -1,4 +1,4 @@
-import { SourceType } from '../types';
+import { Game, SourceType } from '../types';
 
 /** Men's (`cbb`) and women's (`wcbb`) college basketball. */
 export function isCollege(sourceType: SourceType | string): boolean {
@@ -23,3 +23,10 @@ export function periodLabel(sourceType: SourceType | string, index: number): str
 export function isOvertimeGame(sourceType: SourceType | string, periodCount: number): boolean {
   return periodCount > periodFormat(sourceType).regulation;
 }
+
+/** Badge text for non-regular-season games. */
+export const GAME_TYPE_LABELS: Record<NonNullable<Game['gameType']>, string> = {
+  preseason: 'PRESEASON',
+  exhibition: 'EXHIBITION',
+  playoff: 'PLAYOFFS',
+};

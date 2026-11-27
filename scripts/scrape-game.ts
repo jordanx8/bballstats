@@ -1,11 +1,15 @@
 import { scrapeBoxscore } from '../server/scraper.js';
 import { applyRanks } from '../server/espn.js';
+import type { Game } from '../src/types/index.js';
+
+const GAME_TYPES = ['preseason', 'exhibition', 'playoff'] as const;
 import { addGame, loadGames, computeStatsSummary } from '../server/storage.js';
 
-function getCliArgs(): { url: string; notes?: string } {
+function getCliArgs(): { url: string; notes?: string; gameType: string } {
   const args = process.argv.slice(2);
   let url = process.env.GAME_URL || '';
   let notes = process.env.GAME_NOTES || '';
+  let gameType = process.env.GAME_TYPE || '';
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--url' && args[i + 1]) {
@@ -14,31 +18,44 @@ function getCliArgs(): { url: string; notes?: string } {
     } else if (args[i] === '--notes' && args[i + 1]) {
       notes = args[i + 1];
       i++;
+    } else if (args[i] === '--game-type' && args[i + 1]) {
+      gameType = args[i + 1];
+      i++;
     } else if (!url && !args[i].startsWith('--')) {
       url = args[i];
     }
   }
 
-  return { url: url.trim(), notes: notes.trim() || undefined };
+  return { url: url.trim(), notes: notes.trim() || undefined, gameType: gameType.trim().toLowerCase() };
 }
 
 async function main() {
-  const { url, notes } = getCliArgs();
+  const { url, notes, gameType } = getCliArgs();
+
+  // '' or 'none' means no game type; anything else must be an allowed value.
+  if (gameType && gameType !== 'none' && !(GAME_TYPES as readonly string[]).includes(gameType)) {
+    console.error(`❌ Error: invalid game type "${gameType}". Allowed: none, ${GAME_TYPES.join(', ')}.`);
+    process.exit(1);
+  }
 
   if (!url) {
     console.error('❌ Error: Box score URL is required.');
-    console.error('Usage: npx tsx scripts/scrape-game.ts --url "https://www.basketball-reference.com/boxscores/..." --notes "Optional notes"');
+    console.error('Usage: npx tsx scripts/scrape-game.ts --url "https://www.basketball-reference.com/boxscores/..." --notes "Optional notes" --game-type none|preseason|exhibition|playoff');
     process.exit(1);
   }
 
   console.log(`\n🏀 [BBallStats Scraper CLI]`);
   console.log(`🔗 Scraping URL: ${url}`);
   if (notes) console.log(`📝 Notes: "${notes}"`);
+  if (gameType && gameType !== 'none') console.log(`🏷️  Game type: ${gameType}`);
 
   try {
     const scrapedGame = await scrapeBoxscore(url);
     if (notes) {
       scrapedGame.notes = notes;
+    }
+    if (gameType && gameType !== 'none') {
+      scrapedGame.gameType = gameType as NonNullable<Game['gameType']>;
     }
 
     await applyRanks(scrapedGame);

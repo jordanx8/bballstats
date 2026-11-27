@@ -11,6 +11,16 @@ on:
         description: 'Personal memory or notes (optional)'
         required: false
         type: string
+      game_type:
+        description: 'Game type (optional): leave as none for regular-season games'
+        required: false
+        default: 'none'
+        type: choice
+        options:
+          - none
+          - preseason
+          - exhibition
+          - playoff
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages and committing data
 permissions:
@@ -46,11 +56,13 @@ jobs:
         run: npm ci
 
       - name: Scrape Game Boxscore
+        # Inputs reach the script only as environment variables, never inside the
+        # shell command, so notes with quotes, $ or backticks are stored as typed.
         env:
           GAME_URL: ${{ github.event.inputs.url }}
           GAME_NOTES: ${{ github.event.inputs.notes }}
-        run: |
-          npx tsx scripts/scrape-game.ts --url "${{ github.event.inputs.url }}" --notes "${{ github.event.inputs.notes }}"
+          GAME_TYPE: ${{ github.event.inputs.game_type }}
+        run: npx tsx scripts/scrape-game.ts
 
       - name: Update Team Logos & Player Headshots
         continue-on-error: true

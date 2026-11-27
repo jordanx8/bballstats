@@ -57,6 +57,8 @@ export function addGame(game: Game): { game: Game; isNew: boolean } {
       if (updated.homeTeam.rank === undefined) delete updated.homeTeam.rank;
       if (updated.awayTeam.rank === undefined) delete updated.awayTeam.rank;
     }
+    // A re-scrape with no game type chosen keeps the type set earlier.
+    if (!updated.gameType && previous.gameType) updated.gameType = previous.gameType;
     games[existingIdx] = updated;
     saveGames(games);
     return { game: games[existingIdx], isNew: false };

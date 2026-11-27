@@ -24353,7 +24353,8 @@
     },
     "winner": "away",
     "isOvertime": false,
-    "submittedAt": "2026-10-22T14:21:39.139Z"
+    "submittedAt": "2026-10-22T14:21:39.139Z",
+    "gameType": "playoff"
   },
   {
     "id": "nba-202404270NOP",
@@ -25102,7 +25103,8 @@
     },
     "winner": "away",
     "isOvertime": false,
-    "submittedAt": "2026-10-22T14:21:37.401Z"
+    "submittedAt": "2026-10-22T14:21:37.401Z",
+    "gameType": "playoff"
   },
   {
     "id": "nba-202403300NOP",
@@ -51317,7 +51319,8 @@
     },
     "winner": "away",
     "isOvertime": false,
-    "submittedAt": "2026-10-21T18:30:47.985Z"
+    "submittedAt": "2026-10-21T18:30:47.985Z",
+    "gameType": "playoff"
   },
   {
     "id": "nba-202204100NOP",
