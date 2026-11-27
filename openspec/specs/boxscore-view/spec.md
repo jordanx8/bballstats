@@ -68,3 +68,29 @@ On the deployed static site, the notes section SHALL show the game's current not
 #### Scenario: Copying the game ID
 - **WHEN** the user views a game's notes section on the deployed site
 - **THEN** the game's ID is shown with a way to copy it for use in the Action
+
+### Requirement: Box score header shows game-day rank
+The box score page header SHALL show a ranked team's stored game-day rank right before its name, as "#" followed by the number (for example "#17 Kentucky"). A team with no stored rank SHALL show its name with no rank marker, placeholder, or "NR".
+
+#### Scenario: Ranked visitor
+- **WHEN** the user opens the box score for the 2024-02-21 Kentucky @ LSU game
+- **THEN** the header shows "#17 Kentucky" and "LSU" with no rank marker
+
+#### Scenario: No ranks stored
+- **WHEN** the user opens the box score for an NCAA game with no stored ranks, or for any NBA or WNBA game
+- **THEN** the header shows both team names with no rank marker
+
+### Requirement: Box score header shows a game-type badge
+The box score page header SHALL show, for a game marked as preseason or exhibition, a separate badge next to the league badge reading "PRESEASON" or "EXHIBITION" in all capitals, styled like the league badge. A game with no game type SHALL show no such badge. The header's team records SHALL be shown as stored, unaffected by the game type.
+
+#### Scenario: Exhibition box score
+- **WHEN** the user opens the box score for the 2026-10-14 UCF Knights @ LSU game
+- **THEN** the header shows the "NCAA Men" badge, a separate "EXHIBITION" badge, and both teams' "0-0" records
+
+#### Scenario: Preseason box score
+- **WHEN** the user opens the box score for the 2026-10-16 Washington Wizards @ New Orleans Pelicans game
+- **THEN** the header shows the "NBA" badge and a separate "PRESEASON" badge
+
+#### Scenario: Regular-season box score
+- **WHEN** the user opens the box score for any game with no game type
+- **THEN** the header shows only the league badge

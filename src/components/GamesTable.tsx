@@ -275,6 +275,11 @@ export const GamesTable: React.FC<GamesTableProps> = ({
                                   >
                                     {LEAGUE_LABELS[leagueOf(game)]}
                                   </span>
+                                  {game.gameType && (
+                                    <span className="inline-block px-1.5 py-0.5 rounded text-[10px] font-extrabold uppercase bg-slate-400/10 text-slate-200 border border-slate-400/50">
+                                      {game.gameType}
+                                    </span>
+                                  )}
                                   {game.isOvertime && (
                                     <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#0b0c12] text-[#6f7bdc] border border-[#6f7bdc]">
                                       OT
@@ -294,6 +299,9 @@ export const GamesTable: React.FC<GamesTableProps> = ({
                                     <span className="truncate">
                                       {game.awayTeam.rank && <span className="text-slate-400 font-semibold">#{game.awayTeam.rank} </span>}
                                       {game.awayTeam.name}
+                                      {game.awayTeam.record && (
+                                        <span className="text-xs font-normal text-slate-500"> {game.awayTeam.record}</span>
+                                      )}
                                     </span>
                                     {isAwayWinner && <span className="text-[10px] text-[#6f7bdc] font-bold">✓</span>}
                                   </div>
@@ -305,6 +313,9 @@ export const GamesTable: React.FC<GamesTableProps> = ({
                                     <span className="truncate">
                                       {game.homeTeam.rank && <span className="text-slate-400 font-semibold">#{game.homeTeam.rank} </span>}
                                       {game.homeTeam.name}
+                                      {game.homeTeam.record && (
+                                        <span className="text-xs font-normal text-slate-500"> {game.homeTeam.record}</span>
+                                      )}
                                     </span>
                                     {isHomeWinner && <span className="text-[10px] text-[#6f7bdc] font-bold">✓</span>}
                                   </div>

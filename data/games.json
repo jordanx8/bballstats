@@ -6122,7 +6122,8 @@
     "winner": "home",
     "isOvertime": false,
     "submittedAt": "2026-10-22T14:20:00.000Z",
-    "notes": "Preseason"
+    "notes": "Preseason",
+    "gameType": "preseason"
   },
   {
     "id": "lsu-20261014UCF",
@@ -6656,7 +6657,8 @@
     "winner": "home",
     "isOvertime": false,
     "submittedAt": "2026-10-22T14:17:00.000Z",
-    "notes": "Exhibition"
+    "notes": "Exhibition",
+    "gameType": "exhibition"
   },
   {
     "id": "cbb-2026-03-07-18-louisiana-state",

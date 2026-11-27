@@ -75,6 +75,8 @@ export interface Game {
   winner: 'home' | 'away';
   isOvertime?: boolean;
   notes?: string;
+  /** Set only for non-regular-season games. */
+  gameType?: 'preseason' | 'exhibition';
   /** ESPN event this game was matched to (set once a rank lookup succeeds). */
   espnEventId?: string;
   submittedAt: string;

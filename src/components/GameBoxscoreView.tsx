@@ -126,6 +126,11 @@ export const GameBoxscoreView: React.FC<GameBoxscoreViewProps> = ({
             <span className="px-2.5 py-0.5 rounded text-[11px] font-black uppercase bg-[#0b0c12] text-[#6f7bdc] border border-[#6f7bdc]/60 tracking-wider">
               {LEAGUE_LABELS[leagueOf(game)]}
             </span>
+            {game.gameType && (
+              <span className="px-2.5 py-0.5 rounded text-[11px] font-black uppercase bg-slate-400/10 text-slate-200 border border-slate-400/50 tracking-wider">
+                {game.gameType}
+              </span>
+            )}
             <span className="flex items-center space-x-1.5">
               <Calendar className="w-3.5 h-3.5 text-[#6f7bdc]" />
               <span className="text-white font-semibold">{game.formattedDate || game.date}</span>

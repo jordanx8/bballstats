@@ -1,5 +1,5 @@
 import { Game, PlayerStats } from '../types';
-import { getGameSeason } from './statsCalculator';
+import { getGameSeason, parseMinutes } from './statsCalculator';
 import { LeagueKey, leagueOf } from './leaderboards';
 
 /* ------------------------------------------------------------------ */
@@ -340,6 +340,7 @@ export function summarizeSeason(season: string, games: Game[]): SeasonSummary {
   const leagueMap = new Map<LeagueKey, number>();
   const teamGames = new Map<string, number>();
   const playerGames = new Map<string, number>();
+  const playerMinutes = new Map<string, number>();
   const venueMap = new Map<string, number>();
   let totalPoints = 0;
   let overtimeGames = 0;
@@ -368,6 +369,7 @@ export function summarizeSeason(season: string, games: Game[]): SeasonSummary {
         if (seen.has(name.toLowerCase())) continue;
         seen.add(name.toLowerCase());
         playerGames.set(name, (playerGames.get(name) ?? 0) + 1);
+        playerMinutes.set(name, (playerMinutes.get(name) ?? 0) + parseMinutes(p.mp));
         if (!topScorer || p.pts > topScorer.points) {
           topScorer = { playerName: name, points: p.pts, gameId: g.id, teamName: team.name };
         }
@@ -375,12 +377,17 @@ export function summarizeSeason(season: string, games: Game[]): SeasonSummary {
     }
   }
 
-  const top = <T extends string>(m: Map<T, number>) => {
+  const top = <T extends string>(m: Map<T, number>, tiebreak?: Map<T, number>) => {
     let best: [T, number] | null = null;
-    for (const [k, v] of m) if (!best || v > best[1]) best = [k, v];
+    for (const [k, v] of m) {
+      if (!best || v > best[1] || (v === best[1] && (tiebreak?.get(k) ?? 0) > (tiebreak?.get(best[0]) ?? 0))) {
+        best = [k, v];
+      }
+    }
     return best;
   };
-  const tp = top(playerGames);
+  // Most-seen player ties go to whoever played more minutes in those games.
+  const tp = top(playerGames, playerMinutes);
   const tt = top(teamGames);
 
   return {
